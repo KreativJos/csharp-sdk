@@ -1,4 +1,4 @@
-# Pay.nl C# SDK
+# Pay.nl C# .NET Core SDK - Work in progress?
 ---
 
 - [Quick start and examples](#usage)
