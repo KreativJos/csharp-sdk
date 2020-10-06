@@ -1,11 +1,12 @@
 ﻿using System;
-using Newtonsoft.Json;
-using PAYNLSDK.Utilities;
-using System.Collections.Specialized;
-using PAYNLSDK.Exceptions;
-using PAYNLSDK.Objects;
-using PAYNLSDK.Converters;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+
+using Newtonsoft.Json;
+
+using PAYNLSDK.Converters;
+using PAYNLSDK.Exceptions;
+using PAYNLSDK.Utilities;
 
 namespace PAYNLSDK.API.Refund.Transaction
 {
@@ -68,13 +69,9 @@ namespace PAYNLSDK.API.Refund.Transaction
         public void AddProduct(string productId, int amount)
         {
             if (Products.ContainsKey(productId))
-            {
                 Products[productId] += amount;
-            }
             else
-            {
                 Products[productId] = amount;
-            }
         }
 
         /* overrides */
@@ -115,59 +112,43 @@ namespace PAYNLSDK.API.Refund.Transaction
         /// </summary>
         public override bool RequiresApiToken
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
         /// <summary>
         /// 
         /// </summary>
         public override bool RequiresServiceId
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public override System.Collections.Specialized.NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
 
             ParameterValidator.IsNotNull(TransactionId, "TransactionId");
-            nvc.Add("transactionId", TransactionId.ToString());
+            parameters.Add("transactionId", TransactionId.ToString());
 
             if (ParameterValidator.IsNonEmptyInt(Amount))
-            {
-                nvc.Add("amount", Amount.Value.ToString());
-            }
+                parameters.Add("amount", Amount.Value.ToString());
 
             if (!ParameterValidator.IsEmpty(Description))
-            {
-                nvc.Add("description", Description);
-            }
+                parameters.Add("description", Description);
 
-            if (this.ProcessDate.HasValue)
-            {
-                nvc.Add("processDate", this.ProcessDate.Value.ToString("yyyy-MM-dd"));
-            }
+            if (ProcessDate.HasValue)
+                parameters.Add("processDate", ProcessDate.Value.ToString("yyyy-MM-dd"));
 
             if (Products.Count > 0)
-            {
-                nvc.Add("products", JsonConvert.SerializeObject(Products));
-            }
+                parameters.Add("products", JsonConvert.SerializeObject(Products));
 
             if (!ParameterValidator.IsEmpty(ExchangeUrl))
-            {
-                nvc.Add("exchangeUrl", ExchangeUrl);
-            }
+                parameters.Add("exchangeUrl", ExchangeUrl);
 
-            return nvc;
+            return parameters;
         }
 
         /// <summary>
@@ -176,15 +157,12 @@ namespace PAYNLSDK.API.Refund.Transaction
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
+
             if (!Response.Request.Result)
-            {
-                // toss
                 throw new ErrorException(Response.Request.Message);
-            }
         }
 
         /// <summary>
@@ -192,26 +170,24 @@ namespace PAYNLSDK.API.Refund.Transaction
         /// </summary>
         public Response Response { get { return (Response)response; } }
 
-        private static Dictionary<string, object> NvcToDictionary(NameValueCollection nvc, bool handleMultipleValuesPerKey)
+        private static Dictionary<string, object> NvcToDictionary(NameValueCollection parameters, bool handleMultipleValuesPerKey)
         {
             var result = new Dictionary<string, object>();
-            foreach (string key in nvc.Keys)
+
+            foreach (string key in parameters.Keys)
             {
                 if (handleMultipleValuesPerKey)
                 {
-                    string[] values = nvc.GetValues(key);
+                    string[] values = parameters.GetValues(key);
+
                     if (values.Length == 1)
-                    {
                         result.Add(key, values[0]);
-                    }
                     else
-                    {
                         result.Add(key, values);
-                    }
                 }
                 else
                 {
-                    result.Add(key, nvc[key]);
+                    result.Add(key, parameters[key]);
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PAYNLSDK.Net;
 using PAYNLSDK.Utilities;
 using System;
 using System.Collections.Specialized;
@@ -17,16 +18,6 @@ namespace PAYNLSDK.API
         /// Indicator stating whether or not a Service ID is required for a specific request
         /// </summary>
         public virtual bool RequiresServiceId { get { return false; } }
-
-        /// <summary>
-        /// PAYNL API TOKEN
-        /// </summary>
-        public static string ApiToken { get; set; }
-
-        /// <summary>
-        /// PAYNL Service ID
-        /// </summary>
-        public static string ServiceId { get; set; }
 
         /// <summary>
         /// Return as JSON
@@ -70,47 +61,48 @@ namespace PAYNLSDK.API
         /// Returns a NameValueCollection of all paramaters used for this call.
         /// </summary>
         /// <returns>Name Value collection of parameters</returns>
-        public virtual NameValueCollection GetParameters()
+        public virtual NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = new NameValueCollection();
+            var parameters = new NameValueCollection();
+
             if (RequiresApiToken)
             {
-                ParameterValidator.IsNotEmpty(ApiToken, "ApiToken");
-                nvc.Add("token", ApiToken);
+                ParameterValidator.IsNotEmpty(apiToken, "ApiToken");
+                parameters.Add("token", apiToken);
             }
+
             if (RequiresServiceId)
             {
-                ParameterValidator.IsNotEmpty(ServiceId, "ServiceId");
-                nvc.Add("serviceId", ServiceId);
+                ParameterValidator.IsNotEmpty(serviceId, "ServiceId");
+                parameters.Add("serviceId", serviceId);
             }
 
-            return nvc;
+            return parameters;
         }
 
+        
         /// <summary>
         /// Transform NameValueCollection to a querystring
         /// </summary>
         /// <returns>appendable querystring</returns>
-        public string ToQueryString()
+        public string ToQueryString(string apiToken, string serviceId = null)
         {
-            NameValueCollection nvc = GetParameters();
-            if (nvc.Count == 0)
-            {
+            var parameters = GetParameters(apiToken, serviceId);
+
+            if (parameters.Count == 0)
                 return "";
-            }
-            StringBuilder sb = new StringBuilder();
+
+            var sb = new StringBuilder();
             // TODO: add "?" if GET?
 
-            bool first = true;
+            var first = true;
 
-            foreach (string key in nvc.AllKeys)
+            foreach (string key in parameters.AllKeys)
             {
-                foreach (string value in nvc.GetValues(key))
+                foreach (string value in parameters.GetValues(key))
                 {
                     if (!first)
-                    {
                         sb.Append("&");
-                    }
 
                     sb.AppendFormat("{0}={1}", Uri.EscapeDataString(key), Uri.EscapeDataString(value));
 
@@ -136,9 +128,9 @@ namespace PAYNLSDK.API
         /// </summary>
         public string RawResponse
         {
-            get 
+            get
             {
-                return rawResponse; 
+                return rawResponse;
             }
             set
             {

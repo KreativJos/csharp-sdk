@@ -18,7 +18,7 @@ namespace PAYNLSDK.API.Transaction.Refund
         [JsonProperty("description")]
         public string Description { get; set; }
 
-        [JsonProperty("processDate"),JsonConverter(typeof(DMYConverter))]
+        [JsonProperty("processDate"), JsonConverter(typeof(DMYConverter))]
         public DateTime? ProcessDate { get; set; }
 
         public override int Version
@@ -41,38 +41,31 @@ namespace PAYNLSDK.API.Transaction.Refund
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
 
             ParameterValidator.IsNotEmpty(TransactionId, "TransactionId");
-            nvc.Add("transactionId", TransactionId);
+            parameters.Add("transactionId", TransactionId);
 
             if (!ParameterValidator.IsNull(Amount))
-            {
-                nvc.Add("amount", Amount.ToString());
-            }
+                parameters.Add("amount", Amount.ToString());
 
             if (!ParameterValidator.IsEmpty(Description))
-            {
-                nvc.Add("description", Description);
-            }
+                parameters.Add("description", Description);
 
             if (!ParameterValidator.IsNull(ProcessDate))
-            {
-                nvc.Add("processDate", ((DateTime)ProcessDate).ToString("dd-MM-yyyy"));
-            }
+                parameters.Add("processDate", ((DateTime)ProcessDate).ToString("dd-MM-yyyy"));
 
-            return nvc;
+            return parameters;
         }
         public Response Response { get { return (Response)response; } }
 
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
         }
     }

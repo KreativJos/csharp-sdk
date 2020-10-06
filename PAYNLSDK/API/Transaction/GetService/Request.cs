@@ -1,8 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Specialized;
+
+using Newtonsoft.Json;
+
 using PAYNLSDK.Exceptions;
 using PAYNLSDK.Utilities;
-using System;
-using System.Collections.Specialized;
 
 namespace PAYNLSDK.API.Transaction.GetService
 {
@@ -10,14 +11,11 @@ namespace PAYNLSDK.API.Transaction.GetService
     {
         public override bool RequiresServiceId
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         [JsonProperty("paymentMethodId")]
-        public PAYNLSDK.Enums.PaymentMethodId? PaymentMethodId { get; set; }
+        public Enums.PaymentMethodId? PaymentMethodId { get; set; }
 
         public override int Version
         {
@@ -39,23 +37,22 @@ namespace PAYNLSDK.API.Transaction.GetService
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
+
             if (!ParameterValidator.IsNull(PaymentMethodId))
-            {
-                nvc.Add("paymentMethodId", ((int)PaymentMethodId).ToString());
-            }
-            return nvc;
+                parameters.Add("paymentMethodId", ((int)PaymentMethodId).ToString());
+
+            return parameters;
         }
         public Response Response { get { return (Response)response; } }
 
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
         }
     }

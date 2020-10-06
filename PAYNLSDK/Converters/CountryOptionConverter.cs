@@ -17,7 +17,7 @@ namespace PAYNLSDK.Converters
                 var dict = serializer.Deserialize<Dictionary<string, CountryOption>>(reader);
                 return dict;
             }
-            throw new JsonSerializationException(String.Format("Unexpected token '{0}' when parsing country options.", reader.TokenType));
+            throw new JsonSerializationException(string.Format("Unexpected token '{0}' when parsing country options.", reader.TokenType));
 
         }
 

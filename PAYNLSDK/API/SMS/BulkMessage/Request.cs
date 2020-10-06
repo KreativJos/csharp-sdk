@@ -1,12 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Specialized;
+
+using Newtonsoft.Json;
+
 using PAYNLSDK.Exceptions;
 using PAYNLSDK.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PAYNLSDK.API.SMS.BulkMessage
 {
@@ -44,29 +41,28 @@ namespace PAYNLSDK.API.SMS.BulkMessage
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
 
             ParameterValidator.IsNotEmpty(Sender, "Sender");
-            nvc.Add("org", Sender);
+            parameters.Add("org", Sender);
 
             ParameterValidator.IsNotEmpty(Recipient, "Recipient");
-            nvc.Add("dest", Recipient);
+            parameters.Add("dest", Recipient);
 
             ParameterValidator.IsNotEmpty(Message, "Message");
-            nvc.Add("body", Message);
+            parameters.Add("body", Message);
 
-            return nvc;
+            return parameters;
         }
         public Response Response { get { return (Response)response; } }
 
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
         }
     }

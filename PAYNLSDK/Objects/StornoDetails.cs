@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace PAYNLSDK.Objects
 {
@@ -36,7 +35,7 @@ namespace PAYNLSDK.Objects
         /// BIC of the bankaccount the refund is deposited to 
         /// </summary>
         [JsonProperty("bic")]
-        public string bic { get; protected set; }
+        public string BIC { get; protected set; }
 
         /// <summary>
         /// City of the bankaccount owner 
@@ -61,6 +60,5 @@ namespace PAYNLSDK.Objects
         /// </summary>
         [JsonProperty("emailAdress")]
         public string EmailAddress { get; protected set; }
-
     }
 }

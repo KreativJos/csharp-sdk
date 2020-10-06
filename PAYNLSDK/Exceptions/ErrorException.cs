@@ -1,5 +1,6 @@
-﻿using PAYNLSDK.Objects;
-using System;
+﻿using System;
+
+using PAYNLSDK.Objects;
 
 namespace PAYNLSDK.Exceptions
 {
@@ -8,7 +9,7 @@ namespace PAYNLSDK.Exceptions
     /// </summary>
     public class ErrorException : Exception
     {
-        private Error error;
+        private readonly Error error;
         /// <summary>
         /// Error, if any
         /// </summary>
@@ -18,14 +19,11 @@ namespace PAYNLSDK.Exceptions
         }
 
         /// <summary>
-        /// Retiurn whether or not there's an Error object associated with this Exception
+        /// Return whether or not there's an Error object associated with this Exception
         /// </summary>
         public bool HasError
         {
-            get
-            {
-                return (error != null);
-            }
+            get { return error != null; }
         }
 
         /// <summary>
@@ -67,6 +65,5 @@ namespace PAYNLSDK.Exceptions
             : base(message)
         {
         }
-
     }
 }

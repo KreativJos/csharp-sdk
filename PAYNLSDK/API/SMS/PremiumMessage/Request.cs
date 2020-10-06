@@ -1,12 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Specialized;
+
+using Newtonsoft.Json;
+
 using PAYNLSDK.Exceptions;
 using PAYNLSDK.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PAYNLSDK.API.SMS.PremiumMessage
 {
@@ -42,31 +39,29 @@ namespace PAYNLSDK.API.SMS.PremiumMessage
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
 
             ParameterValidator.IsNotEmpty(SmsId, "SmsId");
-            nvc.Add("sms_id", SmsId);
+            parameters.Add("sms_id", SmsId);
 
             ParameterValidator.IsNotEmpty(Secret, "secret");
-            nvc.Add("secret", Secret);
+            parameters.Add("secret", Secret);
 
             ParameterValidator.IsNotEmpty(Message, "message");
-            nvc.Add("message", Message);
+            parameters.Add("message", Message);
 
-            return nvc;
+            return parameters;
         }
         public Response Response { get { return (Response)response; } }
 
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
         }
-
     }
 }

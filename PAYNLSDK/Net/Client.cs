@@ -1,16 +1,14 @@
-﻿using PAYNLSDK.Net.ProxyConfigurationInjector;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
+
 using PAYNLSDK.API;
 using PAYNLSDK.Exceptions;
-using PAYNLSDK.Objects;
+using PAYNLSDK.Net.ProxyConfigurationInjector;
+
 using Newtonsoft.Json;
-using System.Collections.Specialized;
 
 namespace PAYNLSDK.Net
 {
@@ -24,19 +22,19 @@ namespace PAYNLSDK.Net
         /// <summary>
         /// PAYNL API TOKEN
         /// </summary>
-        public string ApiToken
+        private string ApiToken
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
         /// PAYNL SERVICE ID
         /// </summary>
-        public string ServiceID
+        private string ServiceID
         {
             get;
-            private set;
+            set;
         }
 
         /// <summary>
@@ -104,10 +102,10 @@ namespace PAYNLSDK.Net
         /// <summary>
         /// create new Client
         /// </summary>
-        public Client()
-            : this(null, null, null)
-        {
-        }
+        // public Client()
+        //     : this(null, null, null)
+        // {
+        // }
 
         /// <summary>
         /// Performs an actual request
@@ -116,18 +114,20 @@ namespace PAYNLSDK.Net
         /// <returns>raw response string</returns>
         public string PerformRequest(RequestBase request)
         {
-            HttpWebRequest httprequest = PrepareRequest(request.Url, "POST");
-            string rawResponse = PerformRoundTrip2(httprequest, HttpStatusCode.OK, () =>
+            var httprequest = PrepareRequest(request.Url, "POST");
+
+            var rawResponse = PerformRoundTrip2(httprequest, HttpStatusCode.OK, () =>
             {
-                using (var requestWriter = new StreamWriter(httprequest.GetRequestStream()))
-                {
-                    //string serializedResource = resource.Serialize();
-                    string serializedResource = request.ToQueryString();
-                    requestWriter.Write(serializedResource);
-                }
-            }
-            );
+                using var requestWriter = new StreamWriter(httprequest.GetRequestStream());
+
+                //string serializedResource = resource.Serialize();
+                var serializedResource = request.ToQueryString(ApiToken, ServiceID);
+
+                requestWriter.Write(serializedResource);
+            });
+
             request.RawResponse = rawResponse;
+
             return rawResponse;
         }
 
@@ -139,21 +139,23 @@ namespace PAYNLSDK.Net
         /// <returns></returns>
         private HttpWebRequest PrepareRequest(string requestUriString, string method)
         {
-            string uriString = String.Format("{0}/{1}", Endpoint, requestUriString);
+            var uriString = string.Format("{0}/{1}", Endpoint, requestUriString);
             var uri = new Uri(uriString);
             var request = WebRequest.Create(uri) as HttpWebRequest;
+
             request.UserAgent = UserAgent;
+
             const string ApplicationJsonContentType = "application/json"; // http://tools.ietf.org/html/rfc4627
             const string WWWUrlContentType = "application/x-www-form-urlencoded"; // http://tools.ietf.org/html/rfc4627
+
             request.Accept = ApplicationJsonContentType;
             //request.ContentType = ApplicationJsonContentType;
             request.ContentType = WWWUrlContentType;
             request.Method = method;
 
-            if (null != ProxyConfigurationInjector)
-            {
+            if (ProxyConfigurationInjector != null)
                 request.Proxy = ProxyConfigurationInjector.InjectProxyConfiguration(request.Proxy, uri);
-            }
+
             return request;
         }
 
@@ -170,21 +172,21 @@ namespace PAYNLSDK.Net
             {
                 requestAction();
 
-                using (var response = request.GetResponse() as HttpWebResponse)
-                {
-                    var statusCode = (HttpStatusCode)response.StatusCode;
-                    if (statusCode == expectedHttpStatusCode)
-                    {
-                        Stream responseStream = response.GetResponseStream();
-                        Encoding encoding = GetEncoding(response);
+                using var response = request.GetResponse() as HttpWebResponse;
 
-                        using (var responseReader = new StreamReader(responseStream, encoding))
-                        {
-                            return responseReader.ReadToEnd();
-                        }
-                    }
-                    throw new ErrorException(String.Format("Unexpected status code {0}", statusCode));
+                var statusCode = (HttpStatusCode)response.StatusCode;
+
+                if (statusCode == expectedHttpStatusCode)
+                {
+                    Stream responseStream = response.GetResponseStream();
+                    Encoding encoding = GetEncoding(response);
+
+                    using var responseReader = new StreamReader(responseStream, encoding);
+
+                    return responseReader.ReadToEnd();
                 }
+
+                throw new ErrorException(string.Format("Unexpected status code {0}", statusCode));
             }
             catch (WebException e)
             {
@@ -192,7 +194,7 @@ namespace PAYNLSDK.Net
             }
             catch (Exception e)
             {
-                throw new ErrorException(String.Format("Unhandled exception {0}", e), e);
+                throw new ErrorException(string.Format("Unhandled exception {0}", e), e);
             }
         }
 
@@ -215,14 +217,12 @@ namespace PAYNLSDK.Net
         /// <returns>ErrorException</returns>
         private ErrorException ErrorExceptionFromWebException(WebException e)
         {
-            var httpWebResponse = e.Response as HttpWebResponse;
-            if (null == httpWebResponse)
-            {
-                // some kind of network error: didn't even make a connection
+            // some kind of network error: didn't even make a connection
+            if (!(e.Response is HttpWebResponse httpWebResponse))
                 return new ErrorException(e.Message, e);
-            }
 
             var statusCode = (HttpStatusCode)httpWebResponse.StatusCode;
+
             switch (statusCode)
             {
                 case HttpStatusCode.Unauthorized:
@@ -230,34 +230,33 @@ namespace PAYNLSDK.Net
                 case HttpStatusCode.MethodNotAllowed:
                 case HttpStatusCode.UnprocessableEntity:
                 case HttpStatusCode.BadRequest:
-                    using (var responseReader = new StreamReader(httpWebResponse.GetResponseStream()))
                     {
-                        string rawResponse = responseReader.ReadToEnd();
                         // Try JSON parsing.
+                        using var responseReader = new StreamReader(httpWebResponse.GetResponseStream());
+
+                        string rawResponse = responseReader.ReadToEnd();
+
                         try
                         {
-                            Dictionary<string, string> errors = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawResponse);
-                            string errMessage = "";
-                            if (errors.ContainsKey("error"))
-                            {
-                                errMessage = errors["error"];
-                            }
-                            else if (errors.ContainsKey("message"))
-                            {
-                                errMessage = errors["message"];
-                            }
+                            var errors = JsonConvert.DeserializeObject<Dictionary<string, string>>(rawResponse);
+                            var errMessage = "";
 
-                            ErrorException errorException = new ErrorException(errMessage, e);
+                            if (errors.ContainsKey("error"))
+                                errMessage = errors["error"];
+                            else if (errors.ContainsKey("message"))
+                                errMessage = errors["message"];
+
+                            var errorException = new ErrorException(errMessage, e);
+
                             if (errorException != null)
-                            {
                                 return errorException;
-                            }
                         }
-                        catch (Exception ex1)
+                        catch (Exception)
                         {
-                            return new ErrorException(String.Format("Unknown error for {0}", statusCode), e);
+                            return new ErrorException(string.Format("Unknown error for {0}", statusCode), e);
                         }
-                        return new ErrorException(String.Format("Unknown error for {0}", statusCode), e);
+
+                        return new ErrorException(string.Format("Unknown error for {0}", statusCode), e);
                     }
                 case HttpStatusCode.InternalServerError:
                 case HttpStatusCode.NotImplemented:
@@ -275,9 +274,9 @@ namespace PAYNLSDK.Net
                 case HttpStatusCode.NetworkConnectTimeoutError:
                     return new ErrorException("Something went wrong on our end, please try again", e);
                 default:
-                    return new ErrorException(String.Format("Unhandled status code {0}", statusCode), e);
+                    return new ErrorException(string.Format("Unhandled status code {0}", statusCode), e);
             }
         }
-    
+
     }
 }

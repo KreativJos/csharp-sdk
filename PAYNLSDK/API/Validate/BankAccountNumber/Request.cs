@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
-using PAYNLSDK.Converters;
+﻿using System.Collections.Specialized;
+
+using Newtonsoft.Json;
+
 using PAYNLSDK.Exceptions;
 using PAYNLSDK.Utilities;
-using System;
-using System.Collections.Specialized;
 
 namespace PAYNLSDK.API.Validate.BankAccountNumber
 {
@@ -14,10 +14,7 @@ namespace PAYNLSDK.API.Validate.BankAccountNumber
 
         public override bool RequiresApiToken
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         public override int Version
@@ -40,14 +37,14 @@ namespace PAYNLSDK.API.Validate.BankAccountNumber
             get { return ""; }
         }
 
-        public override System.Collections.Specialized.NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
 
             ParameterValidator.IsNotEmpty(BankAccountNumber, "bankAccountNumber");
-            nvc.Add("bankAccountNumber", BankAccountNumber);
+            parameters.Add("bankAccountNumber", BankAccountNumber);
 
-            return nvc;
+            return parameters;
         }
 
         public Response Response { get { return (Response)response; } }
@@ -55,9 +52,8 @@ namespace PAYNLSDK.API.Validate.BankAccountNumber
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
         }
     }

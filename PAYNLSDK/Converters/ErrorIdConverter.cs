@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+
+using Newtonsoft.Json;
 
 namespace PAYNLSDK.Converters
 {
@@ -11,18 +8,18 @@ namespace PAYNLSDK.Converters
     {
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            string result = serializer.Deserialize<string>(reader);
-            if (result == String.Empty)
-            {
+            var result = serializer.Deserialize<string>(reader);
+
+            if (result == string.Empty)
                 return 0;
-            }
+
             try
             {
-                return Int32.Parse(result);
+                return int.Parse(result);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw new JsonSerializationException(String.Format("Unexpected conversion '{0}' when parsing errorId.", result));
+                throw new JsonSerializationException(string.Format("Unexpected conversion '{0}' when parsing errorId.", result));
             }
         }
 
@@ -35,14 +32,12 @@ namespace PAYNLSDK.Converters
             }
             //if (CanConvert(value.GetType()))
             //{
-                serializer.Serialize(writer, value);
+            serializer.Serialize(writer, value);
             //}
-            //throw new JsonSerializationException(String.Format("Can't serialize type {0} to Integer.", value.GetType()));
+            //throw new JsonSerializationException(string.Format("Can't serialize type {0} to Integer.", value.GetType()));
         }
 
         public override bool CanConvert(Type objectType)
-        {
-            return typeof(int).IsAssignableFrom(objectType);
-        }
+            => typeof(int).IsAssignableFrom(objectType);
     }
 }

@@ -34,13 +34,12 @@ namespace PAYNLSDK.API.Validate.GetServerIps
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
-            string[] ips = JsonConvert.DeserializeObject<string[]>(RawResponse);
-            Response r = new Response();
-            r.IPAddresses = ips;
-            response = r;
+            
+            response = new Response
+            {
+                IPAddresses = JsonConvert.DeserializeObject<string[]>(RawResponse)
+            };
         }
     }
 }

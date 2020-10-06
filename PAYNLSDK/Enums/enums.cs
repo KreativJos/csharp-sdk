@@ -54,7 +54,7 @@ namespace PAYNLSDK.Enums
                 var enumMemberAttribute = ((EnumMemberAttribute[])enumType.GetField(name).GetCustomAttributes(typeof(EnumMemberAttribute), true)).Single();
                 if (enumMemberAttribute.Value == str) return (T)Enum.Parse(enumType, name);
             }
-            return default(T);
+            return default;
         }
 
         /// <summary>

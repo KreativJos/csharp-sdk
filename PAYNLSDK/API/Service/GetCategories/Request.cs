@@ -1,9 +1,10 @@
-﻿using System;
+﻿using System.Collections.Specialized;
+
 using Newtonsoft.Json;
-using PAYNLSDK.Utilities;
-using System.Collections.Specialized;
-using PAYNLSDK.Converters;
+
 using PAYNLSDK.Exceptions;
+using PAYNLSDK.Utilities;
+
 
 namespace PAYNLSDK.API.Service.GetCategories
 {
@@ -32,14 +33,14 @@ namespace PAYNLSDK.API.Service.GetCategories
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
+
             if (!ParameterValidator.IsNonEmptyInt(PaymentOptionId))
-            {
-                nvc.Add("paymentOptionId", PaymentOptionId.ToString());
-            }
-            return nvc;
+                parameters.Add("paymentOptionId", PaymentOptionId.ToString());
+
+            return parameters;
         }
 
         public Response Response { get { return (Response)response; } }
@@ -47,13 +48,12 @@ namespace PAYNLSDK.API.Service.GetCategories
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
-            PAYNLSDK.Objects.ServiceCategory[] pm = JsonConvert.DeserializeObject<PAYNLSDK.Objects.ServiceCategory[]>(RawResponse);
-            Response r = new Response();
-            r.ServiceCategories = pm;
-            response = r;
+
+            response = new Response
+            {
+                ServiceCategories = JsonConvert.DeserializeObject<Objects.ServiceCategory[]>(RawResponse)
+            };
         }
     }
 }

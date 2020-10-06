@@ -57,14 +57,13 @@ namespace PAYNLFormsApp
         }
         private void InitRequestDebug(RequestBase request)
         {
-            APISettings.InitAPI();
             AddDebug(string.Format("Calling API {0} / {1}", request.Controller, request.Method));
             AddDebug(string.Format("Requires TOKEN? {0}", request.RequiresApiToken));
             AddDebug(string.Format("Requires SERVICEID? {0}", request.RequiresServiceId));
             AddDebug("-----");
             AddDebug("Initializing...");
             AddDebug(string.Format("URL    : {0}", request.Url));
-            AddDebug(string.Format("PARAMS : {0}", request.ToQueryString()));
+            AddDebug(string.Format("PARAMS : {0}", request.ToQueryString(APISettings.ApiToken, APISettings.ServiceID)));
             AddDebug("-----");
         }
         private void DebugRawResponse(RequestBase request)
@@ -93,7 +92,6 @@ namespace PAYNLFormsApp
         private void txinfo(string id)
         {
             //619204633Xc4027e
-            APISettings.InitAPI();
             ClearDebug();
             PAYNLSDK.API.Transaction.Info.Request request = new PAYNLSDK.API.Transaction.Info.Request();
             request.TransactionId = id;
@@ -120,59 +118,57 @@ namespace PAYNLFormsApp
 
         private void transActionStartToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            APISettings.InitAPI();
             ClearDebug();
             PAYNLSDK.API.Transaction.Start.Request fixture = TransactionStart.GetFixture();
             AddDebug("Fixture loaded.");
             AddDebug("JSON:");
             AddDebug(fixture.ToString());
             AddDebug("PARAMS:");
-            AddDebug(fixture.ToQueryString());
+            AddDebug(fixture.ToQueryString(APISettings.ApiToken, APISettings.ServiceID));
             AddDebug("-----");
             AddDebug("DONE");
         }
 
         private void transactionStartproductsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            APISettings.InitAPI();
             ClearDebug();
             PAYNLSDK.API.Transaction.Start.Request fixture = TransactionStart.GetFixtureNoProductLines();
             AddDebug("Fixture loaded.");
             AddDebug("JSON:");
             AddDebug(fixture.ToString());
             AddDebug("PARAMS:");
-            string qs = fixture.ToQueryString();
+            string qs = fixture.ToQueryString(APISettings.ApiToken, APISettings.ServiceID);
             AddDebug(qs);
-            NameValueCollection nvc = HttpUtility.ParseQueryString(qs);
-            string json = JsonConvert.SerializeObject(NvcToDictionary(nvc, true));
+            var parameters = HttpUtility.ParseQueryString(qs);
+            // string json = JsonConvert.SerializeObject(parametersToDictionary(parameters, true));
             AddDebug("-----");
             //AddDebug("PARAMS AS JSON");
             //AddDebug(json);
-            DumpNvc(nvc);
+            Dumpparameters(parameters);
             AddDebug("-----");
             AddDebug("DONE");
         }
 
-        void DumpNvc(NameValueCollection nvc)
+        void Dumpparameters(NameValueCollection parameters)
         {
-            foreach (string key in nvc.Keys)
+            foreach (string key in parameters.Keys)
             {
-                string[] values = nvc.GetValues(key);
-                foreach (string value in nvc.GetValues(key))
+                string[] values = parameters.GetValues(key);
+                foreach (string value in parameters.GetValues(key))
                 {
                     AddDebug(string.Format("'{0}' : '{1}'", key, value));
                 }
             }
         }
 
-        private Dictionary<string, object> NvcToDictionary(NameValueCollection nvc, bool handleMultipleValuesPerKey)
+        private Dictionary<string, object> parametersToDictionary(NameValueCollection parameters, bool handleMultipleValuesPerKey)
         {
             var result = new Dictionary<string, object>();
-            foreach (string key in nvc.Keys)
+            foreach (string key in parameters.Keys)
             {
                 if (handleMultipleValuesPerKey)
                 {
-                    string[] values = nvc.GetValues(key);
+                    string[] values = parameters.GetValues(key);
                     if (values.Length == 1)
                     {
                         result.Add(key, values[0]);
@@ -184,7 +180,7 @@ namespace PAYNLFormsApp
                 }
                 else
                 {
-                    result.Add(key, nvc[key]);
+                    result.Add(key, parameters[key]);
                 }
             }
 
@@ -195,11 +191,10 @@ namespace PAYNLFormsApp
         {
             try
             {
-                APISettings.InitAPI();
                 ClearDebug();
                 PAYNLSDK.API.Transaction.Start.Request fixture = TransactionStart.GetFixtureNoProductLines();
                 InitRequestDebug(fixture);
-                DumpNvc(fixture.GetParameters());
+                Dumpparameters(fixture.GetParameters(APISettings.ApiToken, APISettings.ServiceID));
 
                 APISettings.Client.PerformRequest(fixture);
                 DebugRawResponse(fixture);
@@ -235,11 +230,11 @@ namespace PAYNLFormsApp
                     AddDebug("CANCELLED!");
                     return;
                 }
-                APISettings.InitAPI();
+                
                 ClearDebug();
                 PAYNLSDK.API.Transaction.Start.Request fixture = LastRequests.LastTransactionStart;
                 InitRequestDebug(fixture);
-                DumpNvc(fixture.GetParameters());
+                Dumpparameters(fixture.GetParameters(APISettings.ApiToken, APISettings.ServiceID));
 
                 APISettings.Client.PerformRequest(fixture);
                 DebugRawResponse(fixture);
@@ -271,11 +266,10 @@ namespace PAYNLFormsApp
         {
             try
             {
-                APISettings.InitAPI();
                 ClearDebug();
                 PAYNLSDK.API.PaymentProfile.GetAll.Request fixture = new PAYNLSDK.API.PaymentProfile.GetAll.Request();
                 InitRequestDebug(fixture);
-                DumpNvc(fixture.GetParameters());
+                Dumpparameters(fixture.GetParameters(APISettings.ApiToken, APISettings.ServiceID));
 
                 APISettings.Client.PerformRequest(fixture);
                 DebugRawResponse(fixture);
@@ -292,11 +286,10 @@ namespace PAYNLFormsApp
         {
             try
             {
-                APISettings.InitAPI();
                 ClearDebug();
                 PAYNLSDK.API.Service.GetCategories.Request fixture = new PAYNLSDK.API.Service.GetCategories.Request();
                 InitRequestDebug(fixture);
-                DumpNvc(fixture.GetParameters());
+                Dumpparameters(fixture.GetParameters(APISettings.ApiToken, APISettings.ServiceID));
 
                 APISettings.Client.PerformRequest(fixture);
                 DebugRawResponse(fixture);
@@ -392,11 +385,11 @@ namespace PAYNLFormsApp
                 try
                 {
                     TestYMD testObj = JsonConvert.DeserializeObject<TestYMD>(dateString);
-                    AddDebug(String.Format("Converted '{0}' to {1}.", dateString, testObj.DT.ToString()));
+                    AddDebug(string.Format("Converted '{0}' to {1}.", dateString, testObj.DT.ToString()));
                 }
                 catch (Exception e0)
                 {
-                    AddDebug(String.Format("Error converting '{0}' using YMD.", dateString));
+                    AddDebug(string.Format("Error converting '{0}' using YMD.", dateString));
                     AddDebug(e0.Message);
                 }
             }
@@ -405,11 +398,11 @@ namespace PAYNLFormsApp
                 try
                 {
                     TestDMY testObj = JsonConvert.DeserializeObject<TestDMY>(dateString);
-                    AddDebug(String.Format("Converted '{0}' to {1}.", dateString, testObj.DT.ToString()));
+                    AddDebug(string.Format("Converted '{0}' to {1}.", dateString, testObj.DT.ToString()));
                 }
                 catch (Exception e1)
                 {
-                    AddDebug(String.Format("Error converting '{0}' using YMD.", dateString));
+                    AddDebug(string.Format("Error converting '{0}' using YMD.", dateString));
                     AddDebug(e1.Message);
                 }
             }
@@ -418,11 +411,11 @@ namespace PAYNLFormsApp
                 try
                 {
                     TestYMDHIS testObj = JsonConvert.DeserializeObject<TestYMDHIS>(dateString);
-                    AddDebug(String.Format("Converted '{0}' to {1}.", dateString, testObj.DT.ToString()));
+                    AddDebug(string.Format("Converted '{0}' to {1}.", dateString, testObj.DT.ToString()));
                 }
                 catch (Exception e2)
                 {
-                    AddDebug(String.Format("Error converting '{0}' using YMD.", dateString));
+                    AddDebug(string.Format("Error converting '{0}' using YMD.", dateString));
                     AddDebug(e2.Message);
                 }
             }
@@ -431,42 +424,40 @@ namespace PAYNLFormsApp
 
         private void refundtransactionToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            APISettings.InitAPI();
             ClearDebug();
             PAYNLSDK.API.Refund.Transaction.Request fixture = RefundTransaction.GetFixtureNoProductLines();
             AddDebug("Fixture loaded.");
             AddDebug("JSON:");
             AddDebug(fixture.ToString());
             AddDebug("PARAMS:");
-            string qs = fixture.ToQueryString();
+            string qs = fixture.ToQueryString(APISettings.ApiToken, APISettings.ServiceID);
             AddDebug(qs);
-            NameValueCollection nvc = HttpUtility.ParseQueryString(qs);
-            string json = JsonConvert.SerializeObject(NvcToDictionary(nvc, true));
+            var parameters = HttpUtility.ParseQueryString(qs);
+            // string json = JsonConvert.SerializeObject(parametersToDictionary(parameters, true));
             AddDebug("-----");
             //AddDebug("PARAMS AS JSON");
             //AddDebug(json);
-            DumpNvc(nvc);
+            Dumpparameters(parameters);
             AddDebug("-----");
             AddDebug("DONE");
         }
 
         private void refundTrasactionProductsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            APISettings.InitAPI();
             ClearDebug();
             PAYNLSDK.API.Refund.Transaction.Request fixture = RefundTransaction.GetFixture();
             AddDebug("Fixture loaded.");
             AddDebug("JSON:");
             AddDebug(fixture.ToString());
             AddDebug("PARAMS:");
-            string qs = fixture.ToQueryString();
+            string qs = fixture.ToQueryString(APISettings.ApiToken, APISettings.ServiceID);
             AddDebug(qs);
-            NameValueCollection nvc = HttpUtility.ParseQueryString(qs);
-            string json = JsonConvert.SerializeObject(NvcToDictionary(nvc, true));
+            var parameters = HttpUtility.ParseQueryString(qs);
+            // string json = JsonConvert.SerializeObject(parametersToDictionary(parameters, true));
             AddDebug("-----");
             //AddDebug("PARAMS AS JSON");
             //AddDebug(json);
-            DumpNvc(nvc);
+            Dumpparameters(parameters);
             AddDebug("-----");
             AddDebug("DONE");
         }
@@ -474,7 +465,7 @@ namespace PAYNLFormsApp
         private void transactionRefundInofromJsonFixtureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ClearDebug();
-            String json = TransactionRefundInfo.GetJsonFixture();
+            string json = TransactionRefundInfo.GetJsonFixture();
             PAYNLSDK.Objects.RefundInfo fixture = TransactionRefundInfo.GetRefundInfoFixture();
             AddDebug("Fixture loaded.");
             AddDebug("JSON:");

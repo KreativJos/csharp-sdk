@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Specialized;
+
+using Newtonsoft.Json;
+
 using PAYNLSDK.Exceptions;
 using PAYNLSDK.Utilities;
-using System;
-using System.Collections.Specialized;
 
 namespace PAYNLSDK.API.Transaction.Info
 {
     public class Request : RequestBase
     {
-
         public string TransactionId { get; set; }
 
         public string EntranceCode { get; set; }
@@ -33,29 +33,27 @@ namespace PAYNLSDK.API.Transaction.Info
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
-            
+            var parameters = base.GetParameters(apiToken, serviceId);
+
             ParameterValidator.IsNotEmpty(TransactionId, "TransactionId");
-            nvc.Add("transactionId", TransactionId);
+            parameters.Add("transactionId", TransactionId);
 
             if (!ParameterValidator.IsEmpty(EntranceCode))
-            {
-                nvc.Add("entranceCode", EntranceCode);
-            }
-            return nvc;
+                parameters.Add("entranceCode", EntranceCode);
+
+            return parameters;
         }
+
         public Response Response { get { return (Response)response; } }
 
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
         }
-    
     }
 }

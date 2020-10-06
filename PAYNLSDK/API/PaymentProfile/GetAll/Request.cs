@@ -1,8 +1,7 @@
-﻿using System;
-using Newtonsoft.Json;
-using PAYNLSDK.Utilities;
-using System.Collections.Specialized;
+﻿using Newtonsoft.Json;
+
 using PAYNLSDK.Exceptions;
+using PAYNLSDK.Utilities;
 
 namespace PAYNLSDK.API.PaymentProfile.GetAll
 {
@@ -33,13 +32,12 @@ namespace PAYNLSDK.API.PaymentProfile.GetAll
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
-            PAYNLSDK.Objects.PaymentProfile[] pm = JsonConvert.DeserializeObject<PAYNLSDK.Objects.PaymentProfile[]>(RawResponse);
-            Response r = new Response();
-            r.PaymentProfiles = pm;
-            response = r;
+            
+            response = new Response
+            {
+                PaymentProfiles = JsonConvert.DeserializeObject<Objects.PaymentProfile[]>(RawResponse)
+            };
         }
     }
 }

@@ -10,10 +10,10 @@ namespace PAYNLSDK.Utilities
     {
         public static void IsNotEmpty(string param, string paramName)
         {
-            if (String.IsNullOrWhiteSpace(param))
+            if (string.IsNullOrWhiteSpace(param))
             {
-                throw new ArgumentException(string.Format("Invalid parameter {0}. Cannot be null, empty or consist of whitespace only", paramName),"paramName");
-               
+                throw new ArgumentException(string.Format("Invalid parameter {0}. Cannot be null, empty or consist of whitespace only", paramName), "paramName");
+
             }
         }
 
@@ -27,7 +27,7 @@ namespace PAYNLSDK.Utilities
 
         public static bool IsEmpty(string param)
         {
-            return String.IsNullOrWhiteSpace(param);
+            return string.IsNullOrWhiteSpace(param);
         }
 
         public static bool IsNull(object param)

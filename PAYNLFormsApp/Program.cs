@@ -30,22 +30,14 @@ namespace PAYNLFormsApp
         public static string ApiToken { get; set; }
         public static string ServiceID { get; set; }
 
-        public static void InitAPI()
-        {
-            RequestBase.ApiToken = ApiToken;
-            RequestBase.ServiceId = ServiceID;
-        }
-
         private static IClient client;
         public static IClient Client
         {
             get
             {
                 if (client == null)
-                {
-                    client = new Client();
-                }
-                InitAPI();
+                    client = new Client(ApiToken, ServiceID);
+
                 return client;
             }
         }

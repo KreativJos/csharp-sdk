@@ -22,17 +22,20 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="transactionId">Transaction Id</param>
         /// <returns>True if PAID, false otherwise</returns>
-        static public bool IsPaid(string transactionId)
+        static public bool IsPaid(IClient client, string transactionId)
         {
             try
             {
-                TransactionInfo request = new TransactionInfo();
-                request.TransactionId = transactionId;
-                Client c = new Client();
-                c.PerformRequest(request);
-                return (request.Response.PaymentDetails.State == Enums.PaymentStatus.PAID);
+                var request = new TransactionInfo()
+                {
+                    TransactionId = transactionId
+                };
+
+                client.PerformRequest(request);
+
+                return IsPaid(request?.Response?.PaymentDetails?.State);
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -43,13 +46,13 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="status">Transaction status</param>
         /// <returns>True if PAID, false otherwise</returns>
-        static public bool IsPaid(Enums.PaymentStatus status)
+        static public bool IsPaid(PaymentStatus? status)
         {
             try
             {
-               return (status == Enums.PaymentStatus.PAID);
+                return status == PaymentStatus.PAID;
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -60,17 +63,20 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="transactionId">Transaction Id</param>
         /// <returns>True if CANCELLED, false otherwise</returns>
-        static public bool IsCancelled(string transactionId)
+        static public bool IsCancelled(IClient client, string transactionId)
         {
             try
             {
-                TransactionInfo request = new TransactionInfo();
-                request.TransactionId = transactionId;
-                Client c = new Client();
-                c.PerformRequest(request);
-                return (request.Response.PaymentDetails.State == Enums.PaymentStatus.CANCEL);
+                var request = new TransactionInfo()
+                {
+                    TransactionId = transactionId
+                };
+
+                client.PerformRequest(request);
+
+                return IsCancelled(request?.Response?.PaymentDetails?.State);
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -81,13 +87,13 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="status">Transaction status</param>
         /// <returns>True if CANCELLED, false otherwise</returns>
-        static public bool IsCancelled(Enums.PaymentStatus status)
+        static public bool IsCancelled(PaymentStatus? status)
         {
             try
             {
-                return (status == Enums.PaymentStatus.CANCEL);
+                return status == PaymentStatus.CANCEL;
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -98,21 +104,21 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="transactionId">Transaction Id</param>
         /// <returns>True if PENDING, false otherwise</returns>
-        static public bool IsPending(string transactionId)
+        static public bool IsPending(IClient client, string transactionId)
         {
             try
             {
-                TransactionInfo request = new TransactionInfo();
-                request.TransactionId = transactionId;
-                Client c = new Client();
-                c.PerformRequest(request);
-                return ((request.Response.PaymentDetails.State == Enums.PaymentStatus.PENDING_1) ||
-                    (request.Response.PaymentDetails.State == Enums.PaymentStatus.PENDING_2) ||
-                    (request.Response.PaymentDetails.State == Enums.PaymentStatus.PENDING_3) ||
-                    (request.Response.PaymentDetails.State == Enums.PaymentStatus.VERIFY) ||
-                    (request.Response.PaymentDetails.StateName == "PENDING"));
+                var request = new TransactionInfo()
+                {
+                    TransactionId = transactionId
+                };
+
+                client.PerformRequest(request);
+
+                return IsPending(request?.Response?.PaymentDetails?.State)
+                    || request?.Response?.PaymentDetails?.StateName == "PENDING";
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -123,17 +129,16 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="status">Transaction status</param>
         /// <returns>True if PENDING, false otherwise</returns>
-        static public bool IsPending(Enums.PaymentStatus status)
+        static public bool IsPending(PaymentStatus? status)
         {
             try
             {
-                return ((status == Enums.PaymentStatus.PENDING_1) ||
-                    (status == Enums.PaymentStatus.PENDING_2) ||
-                    (status == Enums.PaymentStatus.PENDING_3) ||
-                    (status == Enums.PaymentStatus.VERIFY)
-                    );
+                return status == PaymentStatus.PENDING_1
+                    || status == PaymentStatus.PENDING_2
+                    || status == PaymentStatus.PENDING_3
+                    || status == PaymentStatus.VERIFY;
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -144,18 +149,21 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="transactionId">Transaction Id</param>
         /// <returns>True if VERIFY, false otherwise</returns>
-        static public bool IsVerify(string transactionId)
+        static public bool IsVerify(IClient client, string transactionId)
         {
             try
             {
-                TransactionInfo request = new TransactionInfo();
-                request.TransactionId = transactionId;
-                Client c = new Client();
-                c.PerformRequest(request);
-                return ((request.Response.PaymentDetails.State == Enums.PaymentStatus.VERIFY) ||
-                    (request.Response.PaymentDetails.StateName == "VERIFY"));
+                var request = new TransactionInfo()
+                {
+                    TransactionId = transactionId
+                };
+
+                client.PerformRequest(request);
+
+                return IsVerify(request?.Response?.PaymentDetails?.State)
+                    || request.Response.PaymentDetails.StateName == "VERIFY";
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -166,13 +174,13 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="status">Transaction status</param>
         /// <returns>True if VERIFY, false otherwise</returns>
-        static public bool IsVerify(Enums.PaymentStatus status)
+        static public bool IsVerify(PaymentStatus? status)
         {
             try
             {
-                return ((status == Enums.PaymentStatus.VERIFY));
+                return status == PaymentStatus.VERIFY;
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -183,13 +191,14 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="status">Transaction status</param>
         /// <returns>True if REFUND or REFUNDING, false otherwise</returns>
-        static public bool IsRefund(Enums.PaymentStatus status)
+        static public bool IsRefund(PaymentStatus? status)
         {
             try
             {
-                return ((status == Enums.PaymentStatus.REFUND) || (status == Enums.PaymentStatus.REFUNDING));
+                return status == PaymentStatus.REFUND
+                    || IsRefunding(status);
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -200,13 +209,13 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="status">Transaction status</param>
         /// <returns>True if REFUNDING, false otherwise</returns>
-        static public bool IsRefunding(Enums.PaymentStatus status)
+        static public bool IsRefunding(PaymentStatus? status)
         {
             try
             {
-                return ((status == Enums.PaymentStatus.REFUNDING));
+                return status == PaymentStatus.REFUNDING;
             }
-            catch (ErrorException e)
+            catch (ErrorException)
             {
                 return false;
             }
@@ -217,13 +226,16 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="transactionId">Transaction ID</param>
         /// <returns>Full response object with all information available</returns>
-        static public PAYNLSDK.API.Transaction.Info.Response Info(string transactionId)
+        static public API.Transaction.Info.Response Info(IClient client, string transactionId)
         {
-                TransactionInfo request = new TransactionInfo();
-                request.TransactionId = transactionId;
-                Client c = new Client();
-                c.PerformRequest(request);
-                return request.Response;
+            var request = new TransactionInfo()
+            {
+                TransactionId = transactionId
+            };
+
+            client.PerformRequest(request);
+
+            return request.Response;
         }
 
         /// <summary>
@@ -233,13 +245,16 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="paymentMethodId">Paymentmethod ID</param>
         /// <returns>FUll response with all service information</returns>
-        static public PAYNLSDK.API.Transaction.GetService.Response GetService(PaymentMethodId? paymentMethodId)
+        static public API.Transaction.GetService.Response GetService(IClient client, PaymentMethodId? paymentMethodId)
         {
-            TransactionGetService request = new TransactionGetService();
-                request.PaymentMethodId = paymentMethodId;
-                Client c = new Client();
-                c.PerformRequest(request);
-                return request.Response;
+            var request = new TransactionGetService()
+            {
+                PaymentMethodId = paymentMethodId
+            };
+
+            client.PerformRequest(request);
+
+            return request.Response;
         }
 
         /// <summary>
@@ -248,10 +263,8 @@ namespace PAYNLSDK
         /// This is an important API if you want to build your own payment screens.
         /// </summary>
         /// <returns>FUll response with all service information</returns>
-        static public PAYNLSDK.API.Transaction.GetService.Response GetService()
-        {
-            return GetService(null);
-        }
+        static public API.Transaction.GetService.Response GetService(IClient client)
+            => GetService(client, null);
 
         /// <summary>
         /// Performs a (partial) refund call on an existing transaction
@@ -261,15 +274,18 @@ namespace PAYNLSDK
         /// <param name="amount">Amount of the refund. If null is given, it will be the full amount of the transaction.</param>
         /// <param name="processDate">Date to process the refund. May be null.</param>
         /// <returns>Full response including the Refund ID</returns>
-        static public PAYNLSDK.API.Transaction.Refund.Response Refund(string transactionId, string description, int? amount, DateTime? processDate)
+        static public API.Transaction.Refund.Response Refund(IClient client, string transactionId, string description, int? amount, DateTime? processDate)
         {
-            TransactionRefund request = new TransactionRefund();
-            request.TransactionId = transactionId;
-            request.Description = description;
-            request.Amount = amount;
-            request.ProcessDate = processDate;
-            Client c = new Client();
-            c.PerformRequest(request);
+            var request = new TransactionRefund()
+            {
+                TransactionId = transactionId,
+                Description = description,
+                Amount = amount,
+                ProcessDate = processDate
+            };
+
+            client.PerformRequest(request);
+
             return request.Response;
         }
 
@@ -280,10 +296,8 @@ namespace PAYNLSDK
         /// <param name="description">Reason for the refund. May be null.</param>
         /// <param name="amount">Amount of the refund. If null is given, it will be the full amount of the transaction.</param>
         /// <returns>Full response including the Refund ID</returns>
-        static public PAYNLSDK.API.Transaction.Refund.Response Refund(string transactionId, string description, int? amount)
-        {
-            return Refund(transactionId, description, amount, null);
-        }
+        static public API.Transaction.Refund.Response Refund(IClient client, string transactionId, string description, int? amount)
+            => Refund(client, transactionId, description, amount, null);
 
         /// <summary>
         /// Performs a (partial) refund call on an existing transaction
@@ -291,20 +305,16 @@ namespace PAYNLSDK
         /// <param name="transactionId">Transaction ID</param>
         /// <param name="description">Reason for the refund. May be null.</param>
         /// <returns>Full response including the Refund ID</returns>
-        static public PAYNLSDK.API.Transaction.Refund.Response Refund(string transactionId, string description)
-        {
-            return Refund(transactionId, description, null, null);
-        }
+        static public API.Transaction.Refund.Response Refund(IClient client, string transactionId, string description)
+            => Refund(client, transactionId, description, null);
 
         /// <summary>
         /// Performs a (partial) refund call on an existing transaction.
         /// </summary>
         /// <param name="transactionId">Transaction ID</param>
         /// <returns>Full response including the Refund ID</returns>
-        static public PAYNLSDK.API.Transaction.Refund.Response Refund(string transactionId)
-        {
-            return Refund(transactionId, null, null, null);
-        }
+        static public API.Transaction.Refund.Response Refund(IClient client, string transactionId)
+            => Refund(client, transactionId, null);
 
         /// <summary>
         /// Performs a (partial) refund call on an existing transaction
@@ -315,22 +325,24 @@ namespace PAYNLSDK
         /// <param name="processDate">Date to process the refund. May be null.</param>
         /// <param name="exchangeUrl">The url to send notifications to on changes in this refund.</param>
         /// <returns>Full response including the Refund ID</returns>
-        static public PAYNLSDK.API.Transaction.Refund.Response Refund(string transactionId, string description, int? amount, DateTime? processDate, string exchangeUrl)
+        static public API.Transaction.Refund.Response Refund(IClient client, string transactionId, string description, int? amount, DateTime? processDate, string exchangeUrl)
         {
             // Unable to reuse existing method for refunding,  since this specific case needs to be done with different Request 
             // API.Transaction.Refund.Request vs. API.Refund.Transaction.Request (already existing in code, we simply use this here)
+            var request = new API.Refund.Transaction.Request(transactionId)
+            {
+                TransactionId = transactionId,
+                Description = description,
+                Amount = amount,
+                ProcessDate = processDate,
+                ExchangeUrl = exchangeUrl
+            };
 
-            var request = new API.Refund.Transaction.Request(transactionId);
-            request.TransactionId = transactionId;
-            request.Description = description;
-            request.Amount = amount;
-            request.ProcessDate = processDate;
-            request.ExchangeUrl = exchangeUrl;
-            Client c = new Client();
-            c.PerformRequest(request);
+            client.PerformRequest(request);
+
             // We will convert the response to a PAYNLSDK.API.Transaction.Refund.Response so we stay in the same, original, namespace.
             // We manage to get away with this because the API responses have the same definition.
-            return JsonConvert.DeserializeObject<PAYNLSDK.API.Transaction.Refund.Response>(request.RawResponse);
+            return JsonConvert.DeserializeObject<API.Transaction.Refund.Response>(request.RawResponse);
         }
 
         /// <summary>
@@ -338,12 +350,15 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="transactionId">Transaction ID</param>
         /// <returns>Full response including the message about the approvement</returns>
-        static public PAYNLSDK.API.Transaction.Approve.Response Approve(string transactionId)
+        static public API.Transaction.Approve.Response Approve(IClient client, string transactionId)
         {
-            TransactionApprove request = new TransactionApprove();
-            request.TransactionId = transactionId;
-            Client c = new Client();
-            c.PerformRequest(request);
+            var request = new TransactionApprove()
+            {
+                TransactionId = transactionId
+            };
+
+            client.PerformRequest(request);
+
             return request.Response;
         }
 
@@ -352,12 +367,15 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="transactionId">Transaction ID</param>
         /// <returns>Full response including the message about the decline</returns>
-        static public PAYNLSDK.API.Transaction.Decline.Response Decline(string transactionId)
+        static public API.Transaction.Decline.Response Decline(IClient client, string transactionId)
         {
-            TransactionDecline request = new TransactionDecline();
-            request.TransactionId = transactionId;
-            Client c = new Client();
-            c.PerformRequest(request);
+            var request = new TransactionDecline()
+            {
+                TransactionId = transactionId
+            };
+
+            client.PerformRequest(request);
+
             return request.Response;
         }
 
@@ -373,19 +391,18 @@ namespace PAYNLSDK
         /// <param name="transferType">TransferType for this transaction (merchant/transaction)</param>
         /// <param name="transferValue">TransferValue eg MerchantId (M-xxxx-xxxx) or orderId</param>
         /// <returns>Transaction Start Request</returns>
-        static public PAYNLSDK.API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int? paymentOptionId, string paymentSubOptionId, bool? testMode, string transferType, string transferValue)
-        {
-            API.Transaction.Start.Request request = new API.Transaction.Start.Request();
-            request.Amount = 0;
-            request.IPAddress = ipAddress;
-            request.ReturnUrl = returnUrl;
-            request.PaymentOptionId = paymentOptionId;
-            request.PaymentOptionSubId = paymentSubOptionId;
-            request.TestMode = testMode;
-            request.TransferType = transferType;
-            request.TransferValue = transferValue;
-            return request;
-        }
+        static public API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int? paymentOptionId, string paymentSubOptionId, bool? testMode, string transferType, string transferValue)
+            => new API.Transaction.Start.Request()
+            {
+                Amount = 0,
+                IPAddress = ipAddress,
+                ReturnUrl = returnUrl,
+                PaymentOptionId = paymentOptionId,
+                PaymentOptionSubId = paymentSubOptionId,
+                TestMode = testMode,
+                TransferType = transferType,
+                TransferValue = transferValue
+            };
 
         /// <summary>
         /// Creates a transaction start request.
@@ -398,19 +415,18 @@ namespace PAYNLSDK
         /// <param name="transferType">TransferType for this transaction (merchant/transaction)</param>
         /// <param name="transferValue">TransferValue eg MerchantId (M-xxxx-xxxx) or orderId</param>
         /// <returns>Transaction Start Request</returns>
-        static public PAYNLSDK.API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int? paymentOptionId, int? paymentSubOptionId, bool? testMode, string transferType, string transferValue)
-        {
-            API.Transaction.Start.Request request = new API.Transaction.Start.Request();
-            request.Amount = 0;
-            request.IPAddress = ipAddress;
-            request.ReturnUrl = returnUrl;
-            request.PaymentOptionId = paymentOptionId;
-            request.PaymentOptionSubId = paymentSubOptionId.ToString();
-            request.TestMode = testMode;
-            request.TransferType = transferType;
-            request.TransferValue = transferValue;
-            return request;
-        }
+        static public API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int? paymentOptionId, int? paymentSubOptionId, bool? testMode, string transferType, string transferValue)
+            => new API.Transaction.Start.Request()
+            {
+                Amount = 0,
+                IPAddress = ipAddress,
+                ReturnUrl = returnUrl,
+                PaymentOptionId = paymentOptionId,
+                PaymentOptionSubId = paymentSubOptionId.ToString(),
+                TestMode = testMode,
+                TransferType = transferType,
+                TransferValue = transferValue
+            };
 
         /// <summary>
         /// Creates a transaction start request.
@@ -421,18 +437,16 @@ namespace PAYNLSDK
         /// <param name="paymentSubOptionId">	In case of an iDEAL payment this is the ID of the bank (see the paymentOptionSubList in the getService function).</param>
         /// <param name="testMode">	Whether or not we perform this call in test mode.</param>
         /// <returns>Transaction Start Request</returns>
-        static public PAYNLSDK.API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int? paymentOptionId, string paymentSubOptionId, bool? testMode)
-        {
-            API.Transaction.Start.Request request = new API.Transaction.Start.Request();
-            request.Amount = 0;
-            request.IPAddress = ipAddress;
-            request.ReturnUrl = returnUrl;
-            request.PaymentOptionId = paymentOptionId;
-            request.PaymentOptionSubId = paymentSubOptionId;
-            request.TestMode = testMode;
-            return request;
-        }
-
+        static public API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int? paymentOptionId, string paymentSubOptionId, bool? testMode)
+            => new API.Transaction.Start.Request()
+            {
+                Amount = 0,
+                IPAddress = ipAddress,
+                ReturnUrl = returnUrl,
+                PaymentOptionId = paymentOptionId,
+                PaymentOptionSubId = paymentSubOptionId,
+                TestMode = testMode
+            };
 
         /// <summary>
         /// Creates a transaction start request.
@@ -443,32 +457,16 @@ namespace PAYNLSDK
         /// <param name="paymentSubOptionId">	In case of an iDEAL payment this is the ID of the bank (see the paymentOptionSubList in the getService function).</param>
         /// <param name="testMode">	Whether or not we perform this call in test mode.</param>
         /// <returns>Transaction Start Request</returns>
-        static public PAYNLSDK.API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int? paymentOptionId, int? paymentSubOptionId, bool? testMode)
-        {
-            API.Transaction.Start.Request request = new API.Transaction.Start.Request();
-            request.Amount = 0;
-            request.IPAddress = ipAddress;
-            request.ReturnUrl = returnUrl;
-            request.PaymentOptionId = paymentOptionId;
-            request.PaymentOptionSubId = paymentSubOptionId.ToString();
-            request.TestMode = testMode;
-            return request;
-        }
-
-        /// <summary>
-        /// Creates a transaction start request.
-        /// 
-        /// Test Mode will be defaulted to FALSE.
-        /// </summary>
-        /// <param name="ipAddress">The IP address of the customer</param>
-        /// <param name="returnUrl">The URL where the customer has to be send to after the payment.</param>
-        /// <param name="paymentOptionId">	The ID of the payment option (for iDEAL use 10).</param>
-        /// <param name="paymentSubOptionId">	In case of an iDEAL payment this is the ID of the bank (see the paymentOptionSubList in the getService function).</param>
-        /// <returns>Transaction Start Request</returns>
-        static public PAYNLSDK.API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int? paymentOptionId, int? paymentSubOptionId)
-        {
-            return CreateTransactionRequest(ipAddress, returnUrl, paymentOptionId, "", false);
-        }
+        static public API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int? paymentOptionId, int? paymentSubOptionId, bool? testMode = false)
+            => new API.Transaction.Start.Request()
+            {
+                Amount = 0,
+                IPAddress = ipAddress,
+                ReturnUrl = returnUrl,
+                PaymentOptionId = paymentOptionId,
+                PaymentOptionSubId = paymentSubOptionId.ToString(),
+                TestMode = testMode
+            };
 
         /// <summary>
         /// Creates a transaction start request.
@@ -479,10 +477,8 @@ namespace PAYNLSDK
         /// <param name="returnUrl">The URL where the customer has to be send to after the payment.</param>
         /// <param name="paymentOptionId">	The ID of the payment option (for iDEAL use 10).</param>
         /// <returns>Transaction Start Request</returns>
-        static public PAYNLSDK.API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int paymentOptionId)
-        {
-            return CreateTransactionRequest(ipAddress, returnUrl, paymentOptionId, "", false);
-        }
+        static public API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, int paymentOptionId, bool? testMode = false)
+            => CreateTransactionRequest(ipAddress, returnUrl, paymentOptionId, "", testMode);
 
         /// <summary>
         /// Creates a transaction start request.
@@ -492,19 +488,17 @@ namespace PAYNLSDK
         /// <param name="ipAddress">The IP address of the customer</param>
         /// <param name="returnUrl">The URL where the customer has to be send to after the payment.</param>
         /// <returns>Transaction Start Request</returns>
-        static public PAYNLSDK.API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl)
-        {
-            return CreateTransactionRequest(ipAddress, returnUrl, null, "", false);
-        }
+        static public API.Transaction.Start.Request CreateTransactionRequest(string ipAddress, string returnUrl, bool? testMode = false)
+            => CreateTransactionRequest(ipAddress, returnUrl, null, "", testMode);
 
         /// <summary>
         /// Performs a request to start a transaction.
         /// </summary>
         /// <returns>Full response object including Transaction ID</returns>
-        static public PAYNLSDK.API.Transaction.Start.Response Start(PAYNLSDK.API.Transaction.Start.Request request)
+        static public API.Transaction.Start.Response Start(IClient client, API.Transaction.Start.Request request)
         {
-            Client c = new Client();
-            c.PerformRequest(request);
+            client.PerformRequest(request);
+
             return request.Response;
         }
     }

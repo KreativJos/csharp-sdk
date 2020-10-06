@@ -1,6 +1,4 @@
-﻿using PAYNLSDK.Enums;
-using PAYNLSDK.Net;
-using System;
+﻿using PAYNLSDK.Net;
 using ServiceGetCategories = PAYNLSDK.API.Service.GetCategories.Request;
 
 namespace PAYNLSDK
@@ -16,23 +14,16 @@ namespace PAYNLSDK
         /// </summary>
         /// <param name="paymentOptionId">Payment Option ID</param>
         /// <returns>Response object containing service categories</returns>
-        static public PAYNLSDK.API.Service.GetCategories.Response GetCategories(int? paymentOptionId)
+        static public API.Service.GetCategories.Response GetCategories(IClient client, int? paymentOptionId = null)
         {
-            ServiceGetCategories request = new ServiceGetCategories();
-            request.PaymentOptionId = paymentOptionId;
-            Client c = new Client("", "");
-            c.PerformRequest(request);
+            var request = new ServiceGetCategories()
+            {
+                PaymentOptionId = paymentOptionId
+            };
+
+            client.PerformRequest(request);
+
             return request.Response;
         }
-
-        /// <summary>
-        /// Get Service Categories
-        /// </summary>
-        /// <returns>Response object containing service categories</returns>
-        static public PAYNLSDK.API.Service.GetCategories.Response GetCategories()
-        {
-            return GetCategories(null);
-        }
     }
-
 }

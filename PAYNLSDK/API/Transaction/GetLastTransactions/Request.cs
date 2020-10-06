@@ -1,8 +1,9 @@
-﻿using System;
+﻿using System.Collections.Specialized;
+
 using Newtonsoft.Json;
-using PAYNLSDK.Utilities;
-using System.Collections.Specialized;
+
 using PAYNLSDK.Exceptions;
+using PAYNLSDK.Utilities;
 
 namespace PAYNLSDK.API.Transaction.GetLastTransactions
 {
@@ -19,10 +20,7 @@ namespace PAYNLSDK.API.Transaction.GetLastTransactions
 
         public override bool RequiresServiceId
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         public override int Version
@@ -45,32 +43,29 @@ namespace PAYNLSDK.API.Transaction.GetLastTransactions
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
+
             if (!ParameterValidator.IsNull(MerchantId))
-            {
-                nvc.Add("merchantId", MerchantId);
-            }
+                parameters.Add("merchantId", MerchantId);
+
             if (!ParameterValidator.IsNull(Paid))
-            {
-                nvc.Add("paid", ((bool)Paid) ? "1" : "0");
-            }
+                parameters.Add("paid", ((bool)Paid) ? "1" : "0");
+
             if (!ParameterValidator.IsNull(Limit))
-            {
-                nvc.Add("limit", Limit.ToString());
-            }
-            return nvc;
+                parameters.Add("limit", Limit.ToString());
+
+            return parameters;
         }
-        
+
         public Response Response { get { return (Response)response; } }
 
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
         }
     }

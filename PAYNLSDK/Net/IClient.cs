@@ -13,11 +13,11 @@ namespace PAYNLSDK.Net
         /// <summary>
         /// PAYNL API TOKEN
         /// </summary>
-        string ApiToken { get; }
+        // string ApiToken { get; }
         /// <summary>
         /// PAYNL SERVICE ID
         /// </summary>
-        string ServiceID { get; }
+        // string ServiceID { get; }
 
         /// <summary>
         /// Proxy injector

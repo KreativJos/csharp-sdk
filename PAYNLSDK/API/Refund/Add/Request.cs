@@ -1,9 +1,10 @@
 ﻿using System;
-using Newtonsoft.Json;
-using PAYNLSDK.Utilities;
 using System.Collections.Specialized;
+
+using Newtonsoft.Json;
+
 using PAYNLSDK.Exceptions;
-using PAYNLSDK.Objects;
+using PAYNLSDK.Utilities;
 
 namespace PAYNLSDK.API.Refund.Add
 {
@@ -26,7 +27,7 @@ namespace PAYNLSDK.API.Refund.Add
             this.BankAccountNumber = bankAccountNumber;
             this.BankAccountBic = bankAccountBic;
         }
-              
+
         /// <summary>
         /// The amount to be paid should be given in cents. For example € 3.50 becomes 350.
         /// </summary>
@@ -103,7 +104,7 @@ namespace PAYNLSDK.API.Refund.Add
         /// </summary>
         public DateTime? ProcessDate { get; set; }
 
-/* overrides */
+        /* overrides */
         /// <summary>
         /// 
         /// </summary>
@@ -141,98 +142,70 @@ namespace PAYNLSDK.API.Refund.Add
         /// </summary>
         public override bool RequiresApiToken
         {
-            get
-            {
-
-
-                return true;
-            }
+            get { return true; }
         }
         /// <summary>
         /// 
         /// </summary>
         public override bool RequiresServiceId
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public override System.Collections.Specialized.NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
 
             ParameterValidator.IsNotNull(Amount, "Amount");
-            nvc.Add("amount", Amount.ToString());
+            parameters.Add("amount", Amount.ToString());
 
             ParameterValidator.IsNotNull(BankAccountHolder, "BankAccountHolder");
-            nvc.Add("bankAccountHolder", BankAccountHolder);
+            parameters.Add("bankAccountHolder", BankAccountHolder);
 
             ParameterValidator.IsNotNull(BankAccountNumber, "BankAccountNumber");
-            nvc.Add("bankAccountNumber", BankAccountNumber);
+            parameters.Add("bankAccountNumber", BankAccountNumber);
 
             ParameterValidator.IsNotNull(BankAccountBic, "BankAccountBic");
-            nvc.Add("bankAccountBic", BankAccountBic);
+            parameters.Add("bankAccountBic", BankAccountBic);
 
             if (!ParameterValidator.IsEmpty(Description))
-            {
-                nvc.Add("description", Description);
-            }
+                parameters.Add("description", Description);
 
             if (!ParameterValidator.IsNonEmptyInt(PromotorId))
-            {
-                nvc.Add("promotorId", PromotorId.Value.ToString());
-            }
+                parameters.Add("promotorId", PromotorId.Value.ToString());
 
             if (!ParameterValidator.IsEmpty(Tool))
-            {
-                nvc.Add("tool", Tool);
-            }
+                parameters.Add("tool", Tool);
 
             if (!ParameterValidator.IsEmpty(Info))
-            {
-                nvc.Add("info", Info);
-            }
+                parameters.Add("info", Info);
 
             if (!ParameterValidator.IsEmpty(Object))
-            {
-                nvc.Add("object", Object);
-            }
+                parameters.Add("object", Object);
 
             if (!ParameterValidator.IsEmpty(Extra1))
-            {
-                nvc.Add("extra1", Extra1);
-            }
+                parameters.Add("extra1", Extra1);
+
             if (!ParameterValidator.IsEmpty(Extra2))
-            {
-                nvc.Add("extra2", Extra2);
-            }
+                parameters.Add("extra2", Extra2);
+
             if (!ParameterValidator.IsEmpty(Extra3))
-            {
-                nvc.Add("extra3", Extra3);
-            }
+                parameters.Add("extra3", Extra3);
 
             if (!ParameterValidator.IsEmpty(Currency))
-            {
-                nvc.Add("currency", Currency);
-            }
+                parameters.Add("currency", Currency);
 
             if (!ParameterValidator.IsEmpty(OrderId))
-            {
-                nvc.Add("orderId", OrderId);
-            }
+                parameters.Add("orderId", OrderId);
 
-            if (this.ProcessDate.HasValue)
-            {
-                nvc.Add("processDate", this.ProcessDate.Value.ToString("yyyy-MM-dd"));
-            }
+            if (ProcessDate.HasValue)
+                parameters.Add("processDate", ProcessDate.Value.ToString("yyyy-MM-dd"));
 
-            return nvc;
+            return parameters;
         }
 
         /// <summary>
@@ -241,15 +214,12 @@ namespace PAYNLSDK.API.Refund.Add
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
+
             if (!Response.Request.Result)
-            {
-                // toss
                 throw new ErrorException(Response.Request.Message);
-            }
         }
 
         /// <summary>

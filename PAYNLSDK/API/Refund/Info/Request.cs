@@ -1,9 +1,9 @@
-﻿using System;
+﻿using System.Collections.Specialized;
+
 using Newtonsoft.Json;
-using PAYNLSDK.Utilities;
-using System.Collections.Specialized;
+
 using PAYNLSDK.Exceptions;
-using PAYNLSDK.Objects;
+using PAYNLSDK.Utilities;
 
 namespace PAYNLSDK.API.Refund.Info
 {
@@ -64,34 +64,28 @@ namespace PAYNLSDK.API.Refund.Info
         /// </summary>
         public override bool RequiresApiToken
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
         /// <summary>
         /// 
         /// </summary>
         public override bool RequiresServiceId
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public override System.Collections.Specialized.NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
 
             ParameterValidator.IsNotNull(RefundId, "RefundId");
-            nvc.Add("refundId", RefundId);
+            parameters.Add("refundId", RefundId);
 
-            return nvc;
+            return parameters;
         }
 
         /// <summary>
@@ -100,15 +94,12 @@ namespace PAYNLSDK.API.Refund.Info
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
+            
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
+
             if (!Response.Request.Result)
-            {
-                // toss
                 throw new ErrorException(Response.Request.Message);
-            }
         }
 
         /// <summary>

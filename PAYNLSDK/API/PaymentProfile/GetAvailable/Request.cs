@@ -1,9 +1,10 @@
-﻿using System;
+﻿using System.Collections.Specialized;
+
 using Newtonsoft.Json;
-using PAYNLSDK.Utilities;
-using System.Collections.Specialized;
+
 using PAYNLSDK.Converters;
 using PAYNLSDK.Exceptions;
+using PAYNLSDK.Utilities;
 
 namespace PAYNLSDK.API.PaymentProfile.GetAvailable
 {
@@ -18,7 +19,7 @@ namespace PAYNLSDK.API.PaymentProfile.GetAvailable
         [JsonProperty("paymentMethodId")]
         public int? PaymentMethodId { get; set; }
 
-        [JsonProperty("showNotAllowedOnRegistration"),JsonConverter(typeof(BooleanConverter))]
+        [JsonProperty("showNotAllowedOnRegistration"), JsonConverter(typeof(BooleanConverter))]
         public bool? ShowNotAllowedOnRegistration { get; set; }
 
         public override int Version
@@ -41,29 +42,23 @@ namespace PAYNLSDK.API.PaymentProfile.GetAvailable
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters()
+        public override NameValueCollection GetParameters(string apiToken, string serviceId)
         {
-            NameValueCollection nvc = base.GetParameters();
+            var parameters = base.GetParameters(apiToken, serviceId);
 
             ParameterValidator.IsNotNull(CategoryId, "CategoryId");
-            nvc.Add("categoryId", CategoryId.ToString());
+            parameters.Add("categoryId", CategoryId.ToString());
 
             if (!ParameterValidator.IsNonEmptyInt(ProgramId))
-            {
-                nvc.Add("programId", ProgramId.ToString());
-            }
+                parameters.Add("programId", ProgramId.ToString());
 
             if (!ParameterValidator.IsNonEmptyInt(PaymentMethodId))
-            {
-                nvc.Add("paymentMethodId", PaymentMethodId.ToString());
-            }
+                parameters.Add("paymentMethodId", PaymentMethodId.ToString());
 
             if (!ParameterValidator.IsNull(ShowNotAllowedOnRegistration))
-            {
-                nvc.Add("ShowNotAllowedOnRegistration", ((bool)ShowNotAllowedOnRegistration) ? "1" : "0" );
-            }
+                parameters.Add("ShowNotAllowedOnRegistration", ((bool)ShowNotAllowedOnRegistration) ? "1" : "0");
 
-            return nvc;
+            return parameters;
         }
 
         public Response Response { get { return (Response)response; } }
@@ -71,13 +66,12 @@ namespace PAYNLSDK.API.PaymentProfile.GetAvailable
         public override void SetResponse()
         {
             if (ParameterValidator.IsEmpty(rawResponse))
-            {
                 throw new ErrorException("rawResponse is empty!");
-            }
-            PAYNLSDK.Objects.PaymentProfile[] pm = JsonConvert.DeserializeObject<PAYNLSDK.Objects.PaymentProfile[]>(RawResponse);
-            Response r = new Response();
-            r.PaymentProfiles = pm;
-            response = r;
+
+            response = new Response
+            {
+                PaymentProfiles = JsonConvert.DeserializeObject<Objects.PaymentProfile[]>(RawResponse)
+            };
         }
     }
 }

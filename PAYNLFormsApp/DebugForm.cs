@@ -31,7 +31,6 @@ namespace PAYNLFormsApp
 
         public void dumpPaymentmethods()
         {
-            APISettings.InitAPI();
             ClearDebug();
             PAYNLSDK.API.PaymentMethod.GetAll.Request request = new PAYNLSDK.API.PaymentMethod.GetAll.Request();
             InitRequestDebug(request);
@@ -41,20 +40,18 @@ namespace PAYNLFormsApp
         }
 
         public void dumpTransactionGetService()
-        { 
-        APISettings.InitAPI();
+        {
             ClearDebug();
-        PAYNLSDK.API.Transaction.GetService.Request request = new PAYNLSDK.API.Transaction.GetService.Request();
+            PAYNLSDK.API.Transaction.GetService.Request request = new PAYNLSDK.API.Transaction.GetService.Request();
             InitRequestDebug(request);
-        APISettings.Client.PerformRequest(request);
+            APISettings.Client.PerformRequest(request);
             DebugRawResponse(request);
-        tbMain.Text = request.Response.ToString();
+            tbMain.Text = request.Response.ToString();
 
-         }
+        }
 
         public void dumpTransactionGetLast()
         {
-            APISettings.InitAPI();
             ClearDebug();
             PAYNLSDK.API.Transaction.GetLastTransactions.Request request = new PAYNLSDK.API.Transaction.GetLastTransactions.Request();
             InitRequestDebug(request);
@@ -70,7 +67,6 @@ namespace PAYNLFormsApp
             try
             {
 
-                APISettings.InitAPI();
                 ClearDebug();
 
                 if (transactionID == "")
@@ -104,7 +100,6 @@ namespace PAYNLFormsApp
             try
             {
 
-                APISettings.InitAPI();
                 ClearDebug();
 
                 if (transactionID == "")
@@ -141,11 +136,10 @@ namespace PAYNLFormsApp
             try
             {
 
-                APISettings.InitAPI();
                 ClearDebug();
 
                 int numValue;
-                bool parsed = Int32.TryParse(amount, out numValue);
+                bool parsed = int.TryParse(amount, out numValue);
                 if (!parsed || transactionID == "")
                 {
                     if (!parsed)
@@ -163,11 +157,10 @@ namespace PAYNLFormsApp
 
                 else if (exchangeUrl != "")
                 {
-                    APISettings.InitAPI();
                     AddDebug("-----");
                     AddDebug("Working with modified version of call");
 
-                    PAYNLSDK.API.Transaction.Refund.Response response = Transaction.Refund(transactionID, null, numValue, null, exchangeUrl);
+                    PAYNLSDK.API.Transaction.Refund.Response response = Transaction.Refund(APISettings.Client, transactionID, null, numValue, null, exchangeUrl);
 
                     tbMain.Text = response.RefundId;
                 }
@@ -186,7 +179,7 @@ namespace PAYNLFormsApp
 
                     tbMain.Text = request.Response.RefundId;
                 }
-                
+
 
             }
             catch (ErrorException ee)
@@ -202,11 +195,10 @@ namespace PAYNLFormsApp
 
             try
             {
-                APISettings.InitAPI();
                 ClearDebug();
 
                 int numValue;
-                bool parsed = Int32.TryParse(amount, out numValue);
+                bool parsed = int.TryParse(amount, out numValue);
                 if (!parsed)
                 {
 
@@ -241,7 +233,6 @@ namespace PAYNLFormsApp
 
             try
             {
-                APISettings.InitAPI();
                 ClearDebug();
 
                 PAYNLSDK.API.Refund.Info.Request request = new PAYNLSDK.API.Refund.Info.Request(refundID);
@@ -277,14 +268,13 @@ namespace PAYNLFormsApp
         }
         private void InitRequestDebug(RequestBase request)
         {
-            APISettings.InitAPI();
             AddDebug(string.Format("Calling API {0} / {1}", request.Controller, request.Method));
             AddDebug(string.Format("Requires TOKEN? {0}", request.RequiresApiToken));
             AddDebug(string.Format("Requires SERVICEID? {0}", request.RequiresServiceId));
             AddDebug("-----");
             AddDebug("Initializing...");
             AddDebug(string.Format("URL    : {0}", request.Url));
-            AddDebug(string.Format("PARAMS : {0}", request.ToQueryString()));
+            AddDebug(string.Format("PARAMS : {0}", request.ToQueryString(APISettings.ApiToken, APISettings.ServiceID)));
             AddDebug("-----");
         }
         private void DebugRawResponse(RequestBase request)

@@ -47,11 +47,11 @@ namespace PAYNLFormsApp
         void Set()
         {
             // load
-            LastRequests.LastTransactionStart.Amount = Int32.Parse(tbAmount.Text);
+            LastRequests.LastTransactionStart.Amount = int.Parse(tbAmount.Text);
             LastRequests.LastTransactionStart.IPAddress = tbIP.Text;
             LastRequests.LastTransactionStart.ReturnUrl = tbReturn.Text;
             LastRequests.LastTransactionStart.Transaction.OrderExchangeUrl = tbExchange.Text;
-            LastRequests.LastTransactionStart.PaymentOptionId = Int32.Parse(tbPaymentOption.Text);
+            LastRequests.LastTransactionStart.PaymentOptionId = int.Parse(tbPaymentOption.Text);
             LastRequests.LastTransactionStart.Transaction.Description = tbDesc.Text;
 
             LastRequests.LastTransactionStart.Enduser.Language = tbUserlang.Text;
@@ -66,11 +66,13 @@ namespace PAYNLFormsApp
 
         private void button1_Click(object sender, EventArgs e)
         {
-            try {
+            try
+            {
                 Set();
                 OK = true;
             }
-            catch {
+            catch
+            {
             }
             Close();
         }
