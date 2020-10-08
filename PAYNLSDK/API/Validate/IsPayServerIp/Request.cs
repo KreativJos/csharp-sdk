@@ -37,9 +37,9 @@ namespace PAYNLSDK.API.Validate.IsPayServerIp
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters(string apiToken, string serviceId)
+        public override NameValueCollection GetParameters(string serviceId)
         {
-            var parameters = base.GetParameters(apiToken, serviceId);
+            var parameters = base.GetParameters(serviceId);
 
             ParameterValidator.IsNotEmpty(IpAddress, "IpAddress");
             parameters.Add("ipAddress", IpAddress);

@@ -9,6 +9,7 @@ using PAYNLSDK.Exceptions;
 using PAYNLSDK.Net.ProxyConfigurationInjector;
 
 using Newtonsoft.Json;
+using PAYNLSDK.Utilities;
 
 namespace PAYNLSDK.Net
 {
@@ -99,13 +100,12 @@ namespace PAYNLSDK.Net
         {
         }
 
-        /// <summary>
-        /// create new Client
-        /// </summary>
-        // public Client()
-        //     : this(null, null, null)
-        // {
-        // }
+        private string GetAuthorizationHeader()
+        {
+            var bytes = Encoding.ASCII.GetBytes($"token: {ApiToken}");
+
+            return $"Basic {Convert.ToBase64String(bytes)}";
+        }
 
         /// <summary>
         /// Performs an actual request
@@ -114,14 +114,20 @@ namespace PAYNLSDK.Net
         /// <returns>raw response string</returns>
         public string PerformRequest(RequestBase request)
         {
-            var httprequest = PrepareRequest(request.Url, "POST");
+            var httpRequest = PrepareRequest(request.Url, "POST");
 
-            var rawResponse = PerformRoundTrip2(httprequest, HttpStatusCode.OK, () =>
+            if (request.RequiresApiToken)
             {
-                using var requestWriter = new StreamWriter(httprequest.GetRequestStream());
+                ParameterValidator.IsNotEmpty(ApiToken, "ApiToken");
+                httpRequest.Headers["authorization"] = GetAuthorizationHeader();
+            }
+
+            var rawResponse = PerformRoundTrip2(httpRequest, HttpStatusCode.OK, () =>
+            {
+                using var requestWriter = new StreamWriter(httpRequest.GetRequestStream());
 
                 //string serializedResource = resource.Serialize();
-                var serializedResource = request.ToQueryString(ApiToken, ServiceID);
+                var serializedResource = request.ToQueryString(ServiceID);
 
                 requestWriter.Write(serializedResource);
             });
@@ -151,6 +157,7 @@ namespace PAYNLSDK.Net
             request.Accept = ApplicationJsonContentType;
             //request.ContentType = ApplicationJsonContentType;
             request.ContentType = WWWUrlContentType;
+            // request.Credentials =
             request.Method = method;
 
             if (ProxyConfigurationInjector != null)

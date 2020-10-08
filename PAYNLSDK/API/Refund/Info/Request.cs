@@ -78,9 +78,9 @@ namespace PAYNLSDK.API.Refund.Info
         /// 
         /// </summary>
         /// <returns></returns>
-        public override NameValueCollection GetParameters(string apiToken, string serviceId)
+        public override NameValueCollection GetParameters(string serviceId)
         {
-            var parameters = base.GetParameters(apiToken, serviceId);
+            var parameters = base.GetParameters(serviceId);
 
             ParameterValidator.IsNotNull(RefundId, "RefundId");
             parameters.Add("refundId", RefundId);
@@ -95,7 +95,7 @@ namespace PAYNLSDK.API.Refund.Info
         {
             if (ParameterValidator.IsEmpty(rawResponse))
                 throw new ErrorException("rawResponse is empty!");
-            
+
             response = JsonConvert.DeserializeObject<Response>(RawResponse);
 
             if (!Response.Request.Result)

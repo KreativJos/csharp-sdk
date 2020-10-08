@@ -274,7 +274,7 @@ namespace PAYNLFormsApp
             AddDebug("-----");
             AddDebug("Initializing...");
             AddDebug(string.Format("URL    : {0}", request.Url));
-            AddDebug(string.Format("PARAMS : {0}", request.ToQueryString(APISettings.ApiToken, APISettings.ServiceID)));
+            AddDebug(string.Format("PARAMS : {0}", request.ToQueryString(APISettings.ServiceID)));
             AddDebug("-----");
         }
         private void DebugRawResponse(RequestBase request)

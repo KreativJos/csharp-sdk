@@ -61,15 +61,9 @@ namespace PAYNLSDK.API
         /// Returns a NameValueCollection of all paramaters used for this call.
         /// </summary>
         /// <returns>Name Value collection of parameters</returns>
-        public virtual NameValueCollection GetParameters(string apiToken, string serviceId)
+        public virtual NameValueCollection GetParameters(string serviceId)
         {
             var parameters = new NameValueCollection();
-
-            if (RequiresApiToken)
-            {
-                ParameterValidator.IsNotEmpty(apiToken, "ApiToken");
-                parameters.Add("token", apiToken);
-            }
 
             if (RequiresServiceId)
             {
@@ -79,15 +73,14 @@ namespace PAYNLSDK.API
 
             return parameters;
         }
-
         
         /// <summary>
         /// Transform NameValueCollection to a querystring
         /// </summary>
         /// <returns>appendable querystring</returns>
-        public string ToQueryString(string apiToken, string serviceId = null)
+        public string ToQueryString(string serviceId = null)
         {
-            var parameters = GetParameters(apiToken, serviceId);
+            var parameters = GetParameters(serviceId);
 
             if (parameters.Count == 0)
                 return "";
@@ -144,5 +137,4 @@ namespace PAYNLSDK.API
         /// </summary>
         public abstract void SetResponse();
     }
-
 }

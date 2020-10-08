@@ -37,9 +37,9 @@ namespace PAYNLSDK.API.Transaction.GetService
             get { return ""; }
         }
 
-        public override NameValueCollection GetParameters(string apiToken, string serviceId)
+        public override NameValueCollection GetParameters(string serviceId)
         {
-            var parameters = base.GetParameters(apiToken, serviceId);
+            var parameters = base.GetParameters(serviceId);
 
             if (!ParameterValidator.IsNull(PaymentMethodId))
                 parameters.Add("paymentMethodId", ((int)PaymentMethodId).ToString());

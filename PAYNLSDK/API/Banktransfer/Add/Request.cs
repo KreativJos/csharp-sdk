@@ -118,9 +118,9 @@ namespace PAYNLSDK.API.Banktransfer.Add
             get { return true; }
         }
 
-        public override NameValueCollection GetParameters(string apiToken, string serviceId)
+        public override NameValueCollection GetParameters(string serviceId)
         {
-            var parameters = base.GetParameters(apiToken, serviceId);
+            var parameters = base.GetParameters(serviceId);
 
             ParameterValidator.IsNotNull(Amount, "Amount");
             parameters.Add("amount", Amount.ToString());
@@ -151,13 +151,13 @@ namespace PAYNLSDK.API.Banktransfer.Add
 
             if (!ParameterValidator.IsEmpty(Extra1))
                 parameters.Add("extra1", Extra1);
-            
+
             if (!ParameterValidator.IsEmpty(Extra2))
                 parameters.Add("extra2", Extra2);
-            
+
             if (!ParameterValidator.IsEmpty(Extra3))
                 parameters.Add("extra3", Extra3);
-            
+
             if (!ParameterValidator.IsEmpty(Currency))
                 parameters.Add("currency", Currency);
 

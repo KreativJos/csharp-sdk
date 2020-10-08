@@ -63,7 +63,7 @@ namespace PAYNLFormsApp
             AddDebug("-----");
             AddDebug("Initializing...");
             AddDebug(string.Format("URL    : {0}", request.Url));
-            AddDebug(string.Format("PARAMS : {0}", request.ToQueryString(APISettings.ApiToken, APISettings.ServiceID)));
+            AddDebug(string.Format("PARAMS : {0}", request.ToQueryString(APISettings.ServiceID)));
             AddDebug("-----");
         }
         private void DebugRawResponse(RequestBase request)
@@ -124,7 +124,7 @@ namespace PAYNLFormsApp
             AddDebug("JSON:");
             AddDebug(fixture.ToString());
             AddDebug("PARAMS:");
-            AddDebug(fixture.ToQueryString(APISettings.ApiToken, APISettings.ServiceID));
+            AddDebug(fixture.ToQueryString(APISettings.ServiceID));
             AddDebug("-----");
             AddDebug("DONE");
         }
@@ -137,7 +137,7 @@ namespace PAYNLFormsApp
             AddDebug("JSON:");
             AddDebug(fixture.ToString());
             AddDebug("PARAMS:");
-            string qs = fixture.ToQueryString(APISettings.ApiToken, APISettings.ServiceID);
+            string qs = fixture.ToQueryString(APISettings.ServiceID);
             AddDebug(qs);
             var parameters = HttpUtility.ParseQueryString(qs);
             // string json = JsonConvert.SerializeObject(parametersToDictionary(parameters, true));
@@ -194,7 +194,7 @@ namespace PAYNLFormsApp
                 ClearDebug();
                 PAYNLSDK.API.Transaction.Start.Request fixture = TransactionStart.GetFixtureNoProductLines();
                 InitRequestDebug(fixture);
-                Dumpparameters(fixture.GetParameters(APISettings.ApiToken, APISettings.ServiceID));
+                Dumpparameters(fixture.GetParameters(APISettings.ServiceID));
 
                 APISettings.Client.PerformRequest(fixture);
                 DebugRawResponse(fixture);
@@ -230,11 +230,11 @@ namespace PAYNLFormsApp
                     AddDebug("CANCELLED!");
                     return;
                 }
-                
+
                 ClearDebug();
                 PAYNLSDK.API.Transaction.Start.Request fixture = LastRequests.LastTransactionStart;
                 InitRequestDebug(fixture);
-                Dumpparameters(fixture.GetParameters(APISettings.ApiToken, APISettings.ServiceID));
+                Dumpparameters(fixture.GetParameters(APISettings.ServiceID));
 
                 APISettings.Client.PerformRequest(fixture);
                 DebugRawResponse(fixture);
@@ -269,7 +269,7 @@ namespace PAYNLFormsApp
                 ClearDebug();
                 PAYNLSDK.API.PaymentProfile.GetAll.Request fixture = new PAYNLSDK.API.PaymentProfile.GetAll.Request();
                 InitRequestDebug(fixture);
-                Dumpparameters(fixture.GetParameters(APISettings.ApiToken, APISettings.ServiceID));
+                Dumpparameters(fixture.GetParameters(APISettings.ServiceID));
 
                 APISettings.Client.PerformRequest(fixture);
                 DebugRawResponse(fixture);
@@ -289,7 +289,7 @@ namespace PAYNLFormsApp
                 ClearDebug();
                 PAYNLSDK.API.Service.GetCategories.Request fixture = new PAYNLSDK.API.Service.GetCategories.Request();
                 InitRequestDebug(fixture);
-                Dumpparameters(fixture.GetParameters(APISettings.ApiToken, APISettings.ServiceID));
+                Dumpparameters(fixture.GetParameters(APISettings.ServiceID));
 
                 APISettings.Client.PerformRequest(fixture);
                 DebugRawResponse(fixture);
@@ -430,7 +430,7 @@ namespace PAYNLFormsApp
             AddDebug("JSON:");
             AddDebug(fixture.ToString());
             AddDebug("PARAMS:");
-            string qs = fixture.ToQueryString(APISettings.ApiToken, APISettings.ServiceID);
+            string qs = fixture.ToQueryString(APISettings.ServiceID);
             AddDebug(qs);
             var parameters = HttpUtility.ParseQueryString(qs);
             // string json = JsonConvert.SerializeObject(parametersToDictionary(parameters, true));
@@ -450,7 +450,7 @@ namespace PAYNLFormsApp
             AddDebug("JSON:");
             AddDebug(fixture.ToString());
             AddDebug("PARAMS:");
-            string qs = fixture.ToQueryString(APISettings.ApiToken, APISettings.ServiceID);
+            string qs = fixture.ToQueryString(APISettings.ServiceID);
             AddDebug(qs);
             var parameters = HttpUtility.ParseQueryString(qs);
             // string json = JsonConvert.SerializeObject(parametersToDictionary(parameters, true));
