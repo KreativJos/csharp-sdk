@@ -2,6 +2,7 @@
 using PAYNLSDK.Exceptions;
 using PAYNLSDK.Net;
 using System;
+using System.Threading.Tasks;
 using TransactionGetService = PAYNLSDK.API.Transaction.GetService.Request;
 using TransactionInfo = PAYNLSDK.API.Transaction.Info.Request;
 using TransactionRefund = PAYNLSDK.API.Transaction.Refund.Request;
@@ -32,6 +33,30 @@ namespace PAYNLSDK
                 };
 
                 client.PerformRequest(request);
+
+                return IsPaid(request?.Response?.PaymentDetails?.State);
+            }
+            catch (ErrorException)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether a transaction has a status of PAID
+        /// </summary>
+        /// <param name="transactionId">Transaction Id</param>
+        /// <returns>True if PAID, false otherwise</returns>
+        static public async Task<bool> IsPaidAsync(IClient client, string transactionId)
+        {
+            try
+            {
+                var request = new TransactionInfo()
+                {
+                    TransactionId = transactionId
+                };
+
+                await client.PerformRequestAsync(request).ConfigureAwait(false);
 
                 return IsPaid(request?.Response?.PaymentDetails?.State);
             }
@@ -244,7 +269,7 @@ namespace PAYNLSDK
         /// This is an important API if you want to build your own payment screens.
         /// </summary>
         /// <param name="paymentMethodId">Paymentmethod ID</param>
-        /// <returns>FUll response with all service information</returns>
+        /// <returns>Full response with all service information</returns>
         static public API.Transaction.GetService.Response GetService(IClient client, PaymentMethodId? paymentMethodId)
         {
             var request = new TransactionGetService()
@@ -262,10 +287,38 @@ namespace PAYNLSDK
         /// This API returns merchant info and all the available payment options per country for a given service.
         /// This is an important API if you want to build your own payment screens.
         /// </summary>
-        /// <returns>FUll response with all service information</returns>
+        /// <param name="paymentMethodId">Paymentmethod ID</param>
+        /// <returns>Full response with all service information</returns>
+        static public async Task<API.Transaction.GetService.Response> GetServiceAsync(IClient client, PaymentMethodId? paymentMethodId)
+        {
+            var request = new TransactionGetService()
+            {
+                PaymentMethodId = paymentMethodId
+            };
+
+            await client.PerformRequestAsync(request).ConfigureAwait(false);
+
+            return request.Response;
+        }
+
+        /// <summary>
+        /// Return service information.
+        /// This API returns merchant info and all the available payment options per country for a given service.
+        /// This is an important API if you want to build your own payment screens.
+        /// </summary>
+        /// <returns>Full response with all service information</returns>
         static public API.Transaction.GetService.Response GetService(IClient client)
             => GetService(client, null);
 
+
+        /// <summary>
+        /// Return service information.
+        /// This API returns merchant info and all the available payment options per country for a given service.
+        /// This is an important API if you want to build your own payment screens.
+        /// </summary>
+        /// <returns>Full response with all service information</returns>
+        static public async Task<API.Transaction.GetService.Response> GetServiceAsync(IClient client)
+            => await GetServiceAsync(client, null).ConfigureAwait(false);
         /// <summary>
         /// Performs a (partial) refund call on an existing transaction
         /// </summary>
@@ -498,6 +551,17 @@ namespace PAYNLSDK
         static public API.Transaction.Start.Response Start(IClient client, API.Transaction.Start.Request request)
         {
             client.PerformRequest(request);
+
+            return request.Response;
+        }
+
+        /// <summary>
+        /// Performs a request to start a transaction.
+        /// </summary>
+        /// <returns>Full response object including Transaction ID</returns>
+        static public async Task<API.Transaction.Start.Response> StartAsync(IClient client, API.Transaction.Start.Request request)
+        {
+            await client.PerformRequestAsync(request).ConfigureAwait(false);
 
             return request.Response;
         }
