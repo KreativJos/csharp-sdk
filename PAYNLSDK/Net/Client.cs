@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 
 using PAYNLSDK.API;
@@ -10,38 +11,31 @@ using PAYNLSDK.Net.ProxyConfigurationInjector;
 
 using Newtonsoft.Json;
 using PAYNLSDK.Utilities;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Net.Http;
 
 namespace PAYNLSDK.Net
 {
     public class Client : IClient
     {
-        /// <summary>
-        /// PAYNL Endpoint
-        /// </summary>
-        public static readonly string Endpoint = "https://rest-api.pay.nl";
+        const string ApplicationJsonContentType = "application/json"; // http://tools.ietf.org/html/rfc4627
+        const string WWWUrlContentType = "application/x-www-form-urlencoded"; // http://tools.ietf.org/html/rfc4627
 
-        /// <summary>
-        /// PAYNL API TOKEN
-        /// </summary>
-        private string ApiToken
+        private static HttpClient _staticHttpClient;
+        private readonly HttpClient _httpClient;
+        protected HttpClient InternalHttpClient
         {
-            get;
-            set;
+            get
+            {
+                if (_httpClient != null) return _httpClient;
+                if (_staticHttpClient == null) _staticHttpClient = new HttpClient();
+
+                return _staticHttpClient;
+            }
         }
 
-        /// <summary>
-        /// PAYNL SERVICE ID
-        /// </summary>
-        private string ServiceID
-        {
-            get;
-            set;
-        }
-
-        /// <summary>
-        /// Proxy injector
-        /// </summary>
-        public IProxyConfigurationInjector ProxyConfigurationInjector { get; private set; }
+        private ClientSettings Settings { get; }
 
         /// <summary>
         /// API VERSION
@@ -57,7 +51,7 @@ namespace PAYNLSDK.Net
         /// </summary>
         public string ClientVersion
         {
-            get { return "1.0.0.0"; }
+            get { return "1.0.1.1"; }
         }
 
         /// <summary>
@@ -68,6 +62,12 @@ namespace PAYNLSDK.Net
             get { return string.Format("PAYNL/SDK/{0} DotNet/{1}", ClientVersion, ""); }
         }
 
+        public Client(HttpClient httpClient, ClientSettings settings)
+        {
+            Settings = settings;
+            _httpClient = httpClient;
+        }
+
         /// <summary>
         /// Create a new Service client
         /// </summary>
@@ -76,9 +76,12 @@ namespace PAYNLSDK.Net
         /// <param name="proxyConfigurationInjector">Proxy Injector</param>
         public Client(string apiToken, string serviceID, IProxyConfigurationInjector proxyConfigurationInjector)
         {
-            ApiToken = apiToken;
-            ServiceID = serviceID;
-            ProxyConfigurationInjector = proxyConfigurationInjector;
+            Settings = new ClientSettings()
+            {
+                ApiToken = apiToken,
+                ServiceID = serviceID,
+                ProxyConfigurationInjector = proxyConfigurationInjector,
+            };
         }
 
         /// <summary>
@@ -102,7 +105,7 @@ namespace PAYNLSDK.Net
 
         private string GetAuthorizationHeader()
         {
-            var bytes = Encoding.ASCII.GetBytes($"token: {ApiToken}");
+            var bytes = Encoding.ASCII.GetBytes($"token: {Settings.ApiToken}");
 
             return $"Basic {Convert.ToBase64String(bytes)}";
         }
@@ -118,7 +121,7 @@ namespace PAYNLSDK.Net
 
             if (request.RequiresApiToken)
             {
-                ParameterValidator.IsNotEmpty(ApiToken, "ApiToken");
+                ParameterValidator.IsNotEmpty(Settings.ApiToken, "ApiToken");
                 httpRequest.Headers["authorization"] = GetAuthorizationHeader();
             }
 
@@ -127,7 +130,7 @@ namespace PAYNLSDK.Net
                 using var requestWriter = new StreamWriter(httpRequest.GetRequestStream());
 
                 //string serializedResource = resource.Serialize();
-                var serializedResource = request.ToQueryString(ServiceID);
+                var serializedResource = request.ToQueryString(Settings.ServiceID);
 
                 requestWriter.Write(serializedResource);
             });
@@ -135,6 +138,43 @@ namespace PAYNLSDK.Net
             request.RawResponse = rawResponse;
 
             return rawResponse;
+        }
+
+        public async Task<string> PerformRequestAsync(RequestBaseBase request, CancellationToken cancellationToken = default)
+        {
+            if (Settings.ProxyConfigurationInjector != null)
+                throw new NotImplementedException($"PerformRequestAsync not implemented yet with {nameof(Settings.ProxyConfigurationInjector)}");
+
+            var httpRequestContent = new FormUrlEncodedContent(request.GetParametersDictionary(Settings.ServiceID));
+
+            httpRequestContent.Headers.ContentType.MediaType = WWWUrlContentType;
+
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Post, $"{Settings.Endpoint}/{request.Url}")
+            {
+                Content = httpRequestContent,
+            };
+
+            httpRequest.Headers.Accept.Clear();
+            httpRequest.Headers.Accept.ParseAdd(ApplicationJsonContentType);
+            httpRequest.Headers.UserAgent.Add(new ProductInfoHeaderValue("PAYNL_SDK_DOTNET_CORE", ClientVersion));
+
+            if (request.RequiresApiToken)
+            {
+                ParameterValidator.IsNotEmpty(Settings.ApiToken, "ApiToken");
+
+                var apiTokenBytes = Encoding.ASCII.GetBytes($"token: {Settings.ApiToken}");
+
+                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(apiTokenBytes));
+            }
+
+            var response = await InternalHttpClient.SendAsync(httpRequest, cancellationToken)
+                .ConfigureAwait(false);
+
+            var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            request.RawResponse = responseContent;
+
+            return responseContent;
         }
 
         /// <summary>
@@ -145,7 +185,7 @@ namespace PAYNLSDK.Net
         /// <returns></returns>
         private HttpWebRequest PrepareRequest(string requestUriString, string method)
         {
-            var uriString = string.Format("{0}/{1}", Endpoint, requestUriString);
+            var uriString = string.Format("{0}/{1}", Settings.Endpoint, requestUriString);
             var uri = new Uri(uriString);
             var request = WebRequest.Create(uri) as HttpWebRequest;
 
@@ -160,8 +200,8 @@ namespace PAYNLSDK.Net
             // request.Credentials =
             request.Method = method;
 
-            if (ProxyConfigurationInjector != null)
-                request.Proxy = ProxyConfigurationInjector.InjectProxyConfiguration(request.Proxy, uri);
+            if (Settings.ProxyConfigurationInjector != null)
+                request.Proxy = Settings.ProxyConfigurationInjector.InjectProxyConfiguration(request.Proxy, uri);
 
             return request;
         }
@@ -284,6 +324,5 @@ namespace PAYNLSDK.Net
                     return new ErrorException(string.Format("Unhandled status code {0}", statusCode), e);
             }
         }
-
     }
 }
