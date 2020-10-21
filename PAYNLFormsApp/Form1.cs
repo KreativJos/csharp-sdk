@@ -89,14 +89,14 @@ namespace PAYNLFormsApp
             form.ShowDialog();
         }
 
-        private void txinfo(string id)
+        private async void txinfo(string id)
         {
             //619204633Xc4027e
             ClearDebug();
             PAYNLSDK.API.Transaction.Info.Request request = new PAYNLSDK.API.Transaction.Info.Request();
             request.TransactionId = id;
             InitRequestDebug(request);
-            APISettings.Client.PerformRequest(request);
+            await APISettings.Client.PerformRequestAsync(request);//.PerformRequest(request);
             DebugRawResponse(request);
             tbMain.Text = request.Response.ToString();
         }
@@ -187,7 +187,7 @@ namespace PAYNLFormsApp
             return result;
         }
 
-        private void startuseFixtureToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void startuseFixtureToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -196,7 +196,7 @@ namespace PAYNLFormsApp
                 InitRequestDebug(fixture);
                 Dumpparameters(fixture.GetParameters(APISettings.ServiceID));
 
-                APISettings.Client.PerformRequest(fixture);
+                await APISettings.Client.PerformRequestAsync(fixture);
                 DebugRawResponse(fixture);
                 tbMain.Text = fixture.Response.ToString();
 
@@ -220,7 +220,7 @@ namespace PAYNLFormsApp
 
 
 
-        private void frm_FormClosed(object sender, FormClosedEventArgs e)
+        private async void frm_FormClosed(object sender, FormClosedEventArgs e)
         {
             try
             {
@@ -236,7 +236,7 @@ namespace PAYNLFormsApp
                 InitRequestDebug(fixture);
                 Dumpparameters(fixture.GetParameters(APISettings.ServiceID));
 
-                APISettings.Client.PerformRequest(fixture);
+                await APISettings.Client.PerformRequestAsync(fixture);
                 DebugRawResponse(fixture);
                 tbMain.Text = fixture.Response.ToString();
 
@@ -262,7 +262,7 @@ namespace PAYNLFormsApp
             */
         }
 
-        private void paymentProfilesToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void paymentProfilesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -271,7 +271,7 @@ namespace PAYNLFormsApp
                 InitRequestDebug(fixture);
                 Dumpparameters(fixture.GetParameters(APISettings.ServiceID));
 
-                APISettings.Client.PerformRequest(fixture);
+                await APISettings.Client.PerformRequestAsync(fixture);
                 DebugRawResponse(fixture);
                 tbMain.Text = fixture.Response.ToString();
             }
@@ -282,7 +282,7 @@ namespace PAYNLFormsApp
             }
         }
 
-        private void serviceCategoriesToolStripMenuItem_Click(object sender, EventArgs e)
+        private async void serviceCategoriesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
             {
@@ -291,7 +291,7 @@ namespace PAYNLFormsApp
                 InitRequestDebug(fixture);
                 Dumpparameters(fixture.GetParameters(APISettings.ServiceID));
 
-                APISettings.Client.PerformRequest(fixture);
+                await APISettings.Client.PerformRequestAsync(fixture);
                 DebugRawResponse(fixture);
                 tbMain.Text = fixture.Response.ToString();
             }
@@ -474,6 +474,30 @@ namespace PAYNLFormsApp
             AddDebug(fixture.ToString());
             AddDebug("-----");
             AddDebug("DONE");
+        }
+
+        private void mandateRecurringAddToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = new MandateRecurringAddForm();
+            form.ShowDialog();
+        }
+
+        private void mandateAddToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = new MandateAddForm();
+            form.ShowDialog();
+        }
+
+        private void mandateDebitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = new MandateDebitForm();
+            form.ShowDialog();
+        }
+
+        private void mandateInfoToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var form = new MandateInfoForm();
+            form.ShowDialog();
         }
 
         private void refundInfoToolStripMenuItem_Click(object sender, EventArgs e)

@@ -57,6 +57,11 @@
             this.refundAddToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refundAPIToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.refundInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.debitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mandateRecurringAddToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mandateAddToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mandateDebitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mandateInfoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tbMain = new System.Windows.Forms.TextBox();
             this.tbDebug = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
@@ -72,10 +77,12 @@
             this.settingsToolStripMenuItem,
             this.transactionAPIToolStripMenuItem,
             this.changeToolStripMenuItem,
-            this.refundAPIToolStripMenuItem});
+            this.refundAPIToolStripMenuItem,
+            this.debitToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(732, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            this.menuStrip1.Size = new System.Drawing.Size(854, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -96,21 +103,21 @@
             // validationToolStripMenuItem
             // 
             this.validationToolStripMenuItem.Name = "validationToolStripMenuItem";
-            this.validationToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.validationToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.validationToolStripMenuItem.Text = "Validation";
             this.validationToolStripMenuItem.Click += new System.EventHandler(this.validationToolStripMenuItem_Click);
             // 
             // dumpPaymentmethodsToolStripMenuItem
             // 
             this.dumpPaymentmethodsToolStripMenuItem.Name = "dumpPaymentmethodsToolStripMenuItem";
-            this.dumpPaymentmethodsToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.dumpPaymentmethodsToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.dumpPaymentmethodsToolStripMenuItem.Text = "Dump Paymentmethods";
             this.dumpPaymentmethodsToolStripMenuItem.Click += new System.EventHandler(this.dumpPaymentmethodsToolStripMenuItem_Click);
             // 
             // dumpTransactionGetServiceToolStripMenuItem
             // 
             this.dumpTransactionGetServiceToolStripMenuItem.Name = "dumpTransactionGetServiceToolStripMenuItem";
-            this.dumpTransactionGetServiceToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.dumpTransactionGetServiceToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.dumpTransactionGetServiceToolStripMenuItem.Text = "Dump Transaction::GetService";
             this.dumpTransactionGetServiceToolStripMenuItem.Click += new System.EventHandler(this.dumpTransactionGetServiceToolStripMenuItem_Click);
             // 
@@ -121,7 +128,7 @@
             this.xc5b75dPAIDToolStripMenuItem,
             this.xd83303CANCELToolStripMenuItem});
             this.txInfoFor619204633Xc4027eToolStripMenuItem.Name = "txInfoFor619204633Xc4027eToolStripMenuItem";
-            this.txInfoFor619204633Xc4027eToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.txInfoFor619204633Xc4027eToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.txInfoFor619204633Xc4027eToolStripMenuItem.Text = "Dump Transaction Info";
             // 
             // xc4027ePAIDToolStripMenuItem
@@ -154,7 +161,7 @@
             this.refundTrasactionProductsToolStripMenuItem,
             this.transactionRefundInofromJsonFixtureToolStripMenuItem});
             this.fixturesToolStripMenuItem.Name = "fixturesToolStripMenuItem";
-            this.fixturesToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.fixturesToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.fixturesToolStripMenuItem.Text = "Fixtures";
             // 
             // transActionStartToolStripMenuItem
@@ -195,14 +202,14 @@
             // serviceCategoriesToolStripMenuItem
             // 
             this.serviceCategoriesToolStripMenuItem.Name = "serviceCategoriesToolStripMenuItem";
-            this.serviceCategoriesToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.serviceCategoriesToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.serviceCategoriesToolStripMenuItem.Text = "ServiceCategories";
             this.serviceCategoriesToolStripMenuItem.Click += new System.EventHandler(this.serviceCategoriesToolStripMenuItem_Click);
             // 
             // testDateTimeConversionToolStripMenuItem
             // 
             this.testDateTimeConversionToolStripMenuItem.Name = "testDateTimeConversionToolStripMenuItem";
-            this.testDateTimeConversionToolStripMenuItem.Size = new System.Drawing.Size(232, 22);
+            this.testDateTimeConversionToolStripMenuItem.Size = new System.Drawing.Size(231, 22);
             this.testDateTimeConversionToolStripMenuItem.Text = "Test date time conversion";
             this.testDateTimeConversionToolStripMenuItem.Click += new System.EventHandler(this.testDateTimeConversionToolStripMenuItem_Click);
             // 
@@ -217,7 +224,7 @@
             // payNLAPIToolStripMenuItem
             // 
             this.payNLAPIToolStripMenuItem.Name = "payNLAPIToolStripMenuItem";
-            this.payNLAPIToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.payNLAPIToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.payNLAPIToolStripMenuItem.Text = "PayNL API";
             this.payNLAPIToolStripMenuItem.Click += new System.EventHandler(this.payNLAPIToolStripMenuItem_Click);
             // 
@@ -230,41 +237,41 @@
             this.declineToolStripMenuItem,
             this.refundToolStripMenuItem});
             this.transactionAPIToolStripMenuItem.Name = "transactionAPIToolStripMenuItem";
-            this.transactionAPIToolStripMenuItem.Size = new System.Drawing.Size(101, 20);
+            this.transactionAPIToolStripMenuItem.Size = new System.Drawing.Size(100, 20);
             this.transactionAPIToolStripMenuItem.Text = "Transaction API";
             // 
             // startuseFixtureToolStripMenuItem
             // 
             this.startuseFixtureToolStripMenuItem.Name = "startuseFixtureToolStripMenuItem";
-            this.startuseFixtureToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.startuseFixtureToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.startuseFixtureToolStripMenuItem.Text = "Start (use fixture; no modify)";
             this.startuseFixtureToolStripMenuItem.Click += new System.EventHandler(this.startuseFixtureToolStripMenuItem_Click);
             // 
             // startuseFixtureEditableToolStripMenuItem
             // 
             this.startuseFixtureEditableToolStripMenuItem.Name = "startuseFixtureEditableToolStripMenuItem";
-            this.startuseFixtureEditableToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.startuseFixtureEditableToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.startuseFixtureEditableToolStripMenuItem.Text = "Start (use fixture, editable)";
             this.startuseFixtureEditableToolStripMenuItem.Click += new System.EventHandler(this.startuseFixtureEditableToolStripMenuItem_Click);
             // 
             // approveToolStripMenuItem
             // 
             this.approveToolStripMenuItem.Name = "approveToolStripMenuItem";
-            this.approveToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.approveToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.approveToolStripMenuItem.Text = "Approve";
             this.approveToolStripMenuItem.Click += new System.EventHandler(this.approveToolStripMenuItem_Click);
             // 
             // declineToolStripMenuItem
             // 
             this.declineToolStripMenuItem.Name = "declineToolStripMenuItem";
-            this.declineToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.declineToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.declineToolStripMenuItem.Text = "Decline";
             this.declineToolStripMenuItem.Click += new System.EventHandler(this.declineToolStripMenuItem_Click);
             // 
             // refundToolStripMenuItem
             // 
             this.refundToolStripMenuItem.Name = "refundToolStripMenuItem";
-            this.refundToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
+            this.refundToolStripMenuItem.Size = new System.Drawing.Size(225, 22);
             this.refundToolStripMenuItem.Text = "Refund";
             this.refundToolStripMenuItem.Click += new System.EventHandler(this.refundToolStripMenuItem_Click);
             // 
@@ -279,7 +286,7 @@
             // refundAddToolStripMenuItem
             // 
             this.refundAddToolStripMenuItem.Name = "refundAddToolStripMenuItem";
-            this.refundAddToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.refundAddToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.refundAddToolStripMenuItem.Text = "Refund-Add";
             this.refundAddToolStripMenuItem.Click += new System.EventHandler(this.refundAddToolStripMenuItem_Click);
             // 
@@ -294,29 +301,70 @@
             // refundInfoToolStripMenuItem
             // 
             this.refundInfoToolStripMenuItem.Name = "refundInfoToolStripMenuItem";
-            this.refundInfoToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.refundInfoToolStripMenuItem.Size = new System.Drawing.Size(136, 22);
             this.refundInfoToolStripMenuItem.Text = "Refund.Info";
             this.refundInfoToolStripMenuItem.Click += new System.EventHandler(this.refundInfoToolStripMenuItem_Click);
+            // 
+            // debitToolStripMenuItem
+            // 
+            this.debitToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mandateRecurringAddToolStripMenuItem,
+            this.mandateAddToolStripMenuItem,
+            this.mandateDebitToolStripMenuItem,
+            this.mandateInfoToolStripMenuItem});
+            this.debitToolStripMenuItem.Name = "debitToolStripMenuItem";
+            this.debitToolStripMenuItem.Size = new System.Drawing.Size(68, 20);
+            this.debitToolStripMenuItem.Text = "Debit API";
+            // 
+            // mandateRecurringAddToolStripMenuItem
+            // 
+            this.mandateRecurringAddToolStripMenuItem.Name = "requestMandateToolStripMenuItem";
+            this.mandateRecurringAddToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.mandateRecurringAddToolStripMenuItem.Text = "Recurring Mandate";
+            this.mandateRecurringAddToolStripMenuItem.Click += new System.EventHandler(this.mandateRecurringAddToolStripMenuItem_Click);
+            // 
+            // mandateAddToolStripMenuItem
+            // 
+            this.mandateAddToolStripMenuItem.Name = "mandateAddToolStripMenuItem";
+            this.mandateAddToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.mandateAddToolStripMenuItem.Text = "Add Mandate";
+            this.mandateAddToolStripMenuItem.Click += new System.EventHandler(this.mandateAddToolStripMenuItem_Click);
+            // 
+            // mandateDebitToolStripMenuItem
+            // 
+            this.mandateDebitToolStripMenuItem.Name = "mandateDebitToolStripMenuItem";
+            this.mandateDebitToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.mandateDebitToolStripMenuItem.Text = "Mandate Debit";
+            this.mandateDebitToolStripMenuItem.Click += new System.EventHandler(this.mandateDebitToolStripMenuItem_Click);
+            // 
+            // mandateInfoToolStripMenuItem
+            // 
+            this.mandateInfoToolStripMenuItem.Name = "mandateInfoToolStripMenuItem";
+            this.mandateInfoToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.mandateInfoToolStripMenuItem.Text = "Mandate Info";
+            this.mandateInfoToolStripMenuItem.Click += new System.EventHandler(this.mandateInfoToolStripMenuItem_Click);
             // 
             // tbMain
             // 
             this.tbMain.Dock = System.Windows.Forms.DockStyle.Left;
             this.tbMain.Location = new System.Drawing.Point(0, 0);
+            this.tbMain.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tbMain.Multiline = true;
             this.tbMain.Name = "tbMain";
             this.tbMain.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbMain.Size = new System.Drawing.Size(378, 535);
+            this.tbMain.Size = new System.Drawing.Size(440, 621);
             this.tbMain.TabIndex = 1;
             // 
             // tbDebug
             // 
             this.tbDebug.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tbDebug.Location = new System.Drawing.Point(378, 0);
+            this.tbDebug.Location = new System.Drawing.Point(440, 0);
+            this.tbDebug.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tbDebug.Multiline = true;
             this.tbDebug.Name = "tbDebug";
             this.tbDebug.ReadOnly = true;
             this.tbDebug.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.tbDebug.Size = new System.Drawing.Size(354, 535);
+            this.tbDebug.Size = new System.Drawing.Size(414, 621);
             this.tbDebug.TabIndex = 3;
             // 
             // panel1
@@ -326,26 +374,29 @@
             this.panel1.Controls.Add(this.tbMain);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 24);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(732, 535);
+            this.panel1.Size = new System.Drawing.Size(854, 621);
             this.panel1.TabIndex = 3;
             // 
             // splitter1
             // 
-            this.splitter1.Location = new System.Drawing.Point(378, 0);
+            this.splitter1.Location = new System.Drawing.Point(440, 0);
+            this.splitter1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 535);
+            this.splitter1.Size = new System.Drawing.Size(4, 621);
             this.splitter1.TabIndex = 2;
             this.splitter1.TabStop = false;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(732, 559);
+            this.ClientSize = new System.Drawing.Size(854, 645);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "Form1";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -393,6 +444,11 @@
         private System.Windows.Forms.ToolStripMenuItem transactionRefundInofromJsonFixtureToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem refundAPIToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem refundInfoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem debitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mandateRecurringAddToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mandateAddToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mandateDebitToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mandateInfoToolStripMenuItem;
     }
 }
 

@@ -2,6 +2,7 @@
 using PAYNLFormsApp.Fixtures;
 using PAYNLSDK;
 using PAYNLSDK.API;
+using PAYNLSDK.Enums;
 using PAYNLSDK.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -39,12 +40,12 @@ namespace PAYNLFormsApp
             tbMain.Text = request.Response.ToString();
         }
 
-        public void dumpTransactionGetService()
+        public async void dumpTransactionGetService()
         {
             ClearDebug();
             PAYNLSDK.API.Transaction.GetService.Request request = new PAYNLSDK.API.Transaction.GetService.Request();
             InitRequestDebug(request);
-            APISettings.Client.PerformRequest(request);
+            await APISettings.Client.PerformRequestAsync(request);
             DebugRawResponse(request);
             tbMain.Text = request.Response.ToString();
 
@@ -253,6 +254,171 @@ namespace PAYNLFormsApp
             }
         }
 
+        public async void DirectDebit_MandateInfo(string mandateId, string referenceId = null)
+        {
+            try
+            {
+                ClearDebug();
+
+                PAYNLSDK.API.DirectDebit.Info.Request request = new PAYNLSDK.API.DirectDebit.Info.Request(mandateId)
+                {
+                    ReferenceId = referenceId
+                };
+
+                InitRequestDebug(request);
+
+                await APISettings.Client.PerformRequestAsync(request);
+                DebugRawResponse(request);
+
+                tbMain.Text = request.Response.ToString();
+            }
+            catch (ErrorException ee)
+            {
+                AddDebug("~~EXCEPTION~~");
+                AddDebug(ee.Message);
+            }
+        }
+
+        public async void DirectDebit_MandateDebit(string mandateId, int? amount, string description = null, DateTime? processDate = null, bool? last = null)
+        {
+            try
+            {
+                ClearDebug();
+
+                PAYNLSDK.API.DirectDebit.MandateDebit.Request request = new PAYNLSDK.API.DirectDebit.MandateDebit.Request(mandateId)
+                {
+                    Amount = amount,
+                    Description = description,
+                    ProcessDate = processDate,
+                    Last = last,
+                };
+
+                InitRequestDebug(request);
+
+                await APISettings.Client.PerformRequestAsync(request);
+                DebugRawResponse(request);
+
+                tbMain.Text = request.Response.ToString();
+            }
+            catch (ErrorException ee)
+            {
+                AddDebug("~~EXCEPTION~~");
+                AddDebug(ee.Message);
+            }
+        }
+
+        public async void DirectDebit_MandateRecurringAdd(int amount,
+            string bankaccountHolder,
+            string bankaccountNumber,
+            int intervalValue,
+            MandateInterval intervalPeriod,
+            string bankaccountBic = null,
+            DateTime? processDate = null,
+            string description = null,
+            string currency = null,
+            string exchangeUrl = null,
+            string ipAddress = null,
+            string email = null,
+            int? promotorId = null,
+            string tool = null,
+            string info = null,
+            string objectData = null,
+            string extra1 = null,
+            string extra2 = null,
+            string extra3 = null)
+        {
+            try
+            {
+                ClearDebug();
+
+                PAYNLSDK.API.DirectDebit.RecurringAdd.Request request =
+                    new PAYNLSDK.API.DirectDebit.RecurringAdd.Request(amount, bankaccountHolder, bankaccountNumber, intervalValue, intervalPeriod)
+                {
+                    BankaccountBic = bankaccountBic,
+                    ProcessDate = processDate,
+                    Description = description,
+                    Currency = currency,
+                    ExchangeUrl = exchangeUrl,
+                    IpAddress = ipAddress,
+                    Email = email,
+                    PromotorId = promotorId,
+                    Tool = tool,
+                    Info = info,
+                    Object = objectData,
+                    Extra1 = extra1,
+                    Extra2 = extra2,
+                    Extra3 = extra3
+                };
+
+                InitRequestDebug(request);
+
+                await APISettings.Client.PerformRequestAsync(request);
+                DebugRawResponse(request);
+
+                tbMain.Text = request.Response.ToString();
+            }
+            catch (ErrorException ee)
+            {
+                AddDebug("~~EXCEPTION~~");
+                AddDebug(ee.Message);
+            }
+        }
+
+        public async void DirectDebit_MandateAdd(int amount,
+            string bankaccountHolder,
+            string bankaccountNumber,
+            string bankaccountBic = null,
+            DateTime? processDate = null,
+            string description = null,
+            string currency = null,
+            string exchangeUrl = null,
+            string ipAddress = null,
+            string email = null,
+            int? promotorId = null,
+            string tool = null,
+            string info = null,
+            string objectData = null,
+            string extra1 = null,
+            string extra2 = null,
+            string extra3 = null)
+        {
+            try
+            {
+                ClearDebug();
+
+                PAYNLSDK.API.DirectDebit.MandateAdd.Request request =
+                    new PAYNLSDK.API.DirectDebit.MandateAdd.Request(amount, bankaccountHolder, bankaccountNumber)
+                {
+                    BankaccountBic = bankaccountBic,
+                    ProcessDate = processDate,
+                    Description = description,
+                    Currency = currency,
+                    ExchangeUrl = exchangeUrl,
+                    IpAddress = ipAddress,
+                    Email = email,
+                    PromotorId = promotorId,
+                    Tool = tool,
+                    Info = info,
+                    Object = objectData,
+                    Extra1 = extra1,
+                    Extra2 = extra2,
+                    Extra3 = extra3
+                };
+
+                InitRequestDebug(request);
+
+                await APISettings.Client.PerformRequestAsync(request);
+                DebugRawResponse(request);
+
+                tbMain.Text = request.Response.ToString();
+            }
+            catch (ErrorException ee)
+            {
+                AddDebug("~~EXCEPTION~~");
+                AddDebug(ee.Message);
+            }
+        }
+
         // help function
         private void ClearDebug()
         {
@@ -266,7 +432,7 @@ namespace PAYNLFormsApp
             else
                 tbDebug.AppendText(System.Environment.NewLine + value);
         }
-        private void InitRequestDebug(RequestBase request)
+        private void InitRequestDebug(RequestBaseBase request)
         {
             AddDebug(string.Format("Calling API {0} / {1}", request.Controller, request.Method));
             AddDebug(string.Format("Requires TOKEN? {0}", request.RequiresApiToken));
@@ -277,7 +443,7 @@ namespace PAYNLFormsApp
             AddDebug(string.Format("PARAMS : {0}", request.ToQueryString(APISettings.ServiceID)));
             AddDebug("-----");
         }
-        private void DebugRawResponse(RequestBase request)
+        private void DebugRawResponse(RequestBaseBase request)
         {
             AddDebug("RAW Result from PAYNL");
             AddDebug(request.RawResponse);
