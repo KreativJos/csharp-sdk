@@ -1,13 +1,17 @@
 ﻿using Newtonsoft.Json;
-using PAYNLSDK.Net;
+
+using PAYNLSDK.Exceptions;
 using PAYNLSDK.Utilities;
+
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Text;
 
 namespace PAYNLSDK.API
 {
-    public abstract class RequestBase
+    public abstract class RequestBaseBase
     {
         /// <summary>
         /// Indicator stating whether or not a API Token is required for a specific request
@@ -24,10 +28,7 @@ namespace PAYNLSDK.API
         /// </summary>
         /// <returns>JSON string</returns>
         public override string ToString()
-        {
-            //return base.ToString();
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
+            => JsonConvert.SerializeObject(this, Formatting.Indented);
 
         /// <summary>
         /// URL used to perform this specific request
@@ -73,7 +74,14 @@ namespace PAYNLSDK.API
 
             return parameters;
         }
-        
+
+        public IEnumerable<KeyValuePair<string, string>> GetParametersDictionary(string serviceId)
+        {
+            var parameters = GetParameters(serviceId);
+
+            return parameters.AllKeys.ToDictionary(p => p, p => parameters[p]);
+        }
+
         /// <summary>
         /// Transform NameValueCollection to a querystring
         /// </summary>
@@ -107,12 +115,7 @@ namespace PAYNLSDK.API
         }
 
         /// <summary>
-        /// Response belonging to this request
-        /// </summary>
-        protected ResponseBase response;
-
-        /// <summary>
-        /// The raw response stroing
+        /// The raw response string
         /// </summary>
         protected string rawResponse;
 
@@ -136,5 +139,33 @@ namespace PAYNLSDK.API
         /// Load the raw response and perform any actions along with it.
         /// </summary>
         public abstract void SetResponse();
+    }
+
+    public abstract class RequestBase : RequestBaseBase
+    {
+        /// <summary>
+        /// Response belonging to this request
+        /// </summary>
+        protected ResponseBase response;
+    }
+
+    public abstract class RequestBase<T> : RequestBaseBase
+        where T : ResponseBase
+    {
+        /// <summary>
+        /// Response belonging to this request
+        /// </summary>
+        public T Response { get; set; }
+
+        public override void SetResponse()
+        {
+            if (ParameterValidator.IsEmpty(rawResponse))
+                throw new ErrorException("rawResponse is empty!");
+
+            Response = JsonConvert.DeserializeObject<T>(RawResponse);
+
+            if (!Response.Request.Result)
+                throw new ErrorException(Response.Request.Message);
+        }
     }
 }

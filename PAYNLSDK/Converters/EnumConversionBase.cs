@@ -20,6 +20,19 @@ namespace PAYNLSDK.Converters
         }
     }
 
+    public class MandateIntervalConverter : EnumConversionBase
+    {
+        public override Type EnumType
+        {
+            get { return typeof(Enums.MandateInterval); }
+        }
+
+        public override bool CanConvert(Type objectType)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class GenderConverter : EnumConversionBase
     {
         public override Type EnumType

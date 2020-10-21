@@ -10,7 +10,7 @@ namespace PAYNLSDK.Enums
     /// <summary>
     /// Utility to convert Enum Values to EnumMember Values and vice versa.
     /// </summary>
-    public class EnumUtil
+    public static class EnumUtil
     {
         /// <summary>
         /// Return the value of an EnumMember
@@ -18,7 +18,7 @@ namespace PAYNLSDK.Enums
         /// <typeparam name="T">Type of Enum</typeparam>
         /// <param name="type">Enum value</param>
         /// <returns>Value of the EnumMember attribute</returns>
-        public static string ToEnumString<T>(T type)
+        public static string ToEnumString<T>(this T type)
         {
             var enumType = typeof(T);
             var name = Enum.GetName(enumType, type);
@@ -46,7 +46,7 @@ namespace PAYNLSDK.Enums
         /// <typeparam name="T">Enum Type</typeparam>
         /// <param name="str">EnumMember Value</param>
         /// <returns>Enum Value</returns>
-        public static T ToEnum<T>(string str)
+        public static T ToEnum<T>(this string str)
         {
             var enumType = typeof(T);
             foreach (var name in Enum.GetNames(enumType))
@@ -63,7 +63,7 @@ namespace PAYNLSDK.Enums
         /// <param name="str">EnumMember Value</param>
         /// <param name="enumType">Enum Type</param>
         /// <returns>Enum Value</returns>
-        public static object ToEnum(string str, Type enumType)
+        public static object ToEnum(this string str, Type enumType)
         {
             foreach (var name in Enum.GetNames(enumType))
             {
@@ -79,7 +79,7 @@ namespace PAYNLSDK.Enums
     /// </summary>
     public enum Gender
     {
-        [EnumMember(Value="m")]
+        [EnumMember(Value = "m")]
         Male,
         [EnumMember(Value = "f")]
         Female
@@ -266,5 +266,111 @@ namespace PAYNLSDK.Enums
         PAYMENT,
         [EnumMember(Value = "ROUNDING")]
         ROUNDING,
+    }
+
+    public enum DirectDebitDeclineCode
+    {
+        [EnumMember(Value = "109")]
+        AdministrativeReason = 109,
+        [EnumMember(Value = "121")]
+        DoesNotAcceptDirectDebit = 121,
+        [EnumMember(Value = "274")]
+        AccountNumberBlocked = 274,
+        [EnumMember(Value = "277")]
+        SelectiveDirectDebitlock = 277,
+        [EnumMember(Value = "112")]
+        AccountNumberExpired = 112,
+        [EnumMember(Value = "115")]
+        AccountNumberUnknown = 115,
+        [EnumMember(Value = "118")]
+        NoDirectDebitAuthorisationProvided = 118,
+        [EnumMember(Value = "124")]
+        DirectDebitCarriedOutTwice = 124,
+        [EnumMember(Value = "271")]
+        NameOrNumberDoesNotMatch = 271,
+        [EnumMember(Value = "280")]
+        AccountnumberWKA = 280,
+        [EnumMember(Value = "286")]
+        ReasonNotSpecified = 286,
+        [EnumMember(Value = "331")]
+        WrongfulDirectDebitReport = 331,
+    }
+
+    public enum DirectDebitStatus
+    {
+        [EnumMember(Value = "94")]
+        Processed = 94,
+        [EnumMember(Value = "100")]
+        Debited = 100,
+        [EnumMember(Value = "106")]
+        Declined = 106,
+
+        [EnumMember(Value = "91")]
+        Added = 91,
+        [EnumMember(Value = "526")]
+        InBatch = 526,
+        [EnumMember(Value = "97")]
+        PrematurelyRejected = 97,
+        [EnumMember(Value = "103")]
+        Removed = 103,
+        [EnumMember(Value = "127")]
+        RejectedByBank = 127
+    }
+
+    public enum DirectDebitErrorCode
+    {
+        [EnumMember(Value = "100")]
+        GeneralError = 100,
+        [EnumMember(Value = "101")]
+        InvalidAmount = 101,
+        [EnumMember(Value = "102")]
+        ProcessDateTooEarly = 102,
+        [EnumMember(Value = "103")]
+        InvalidInterval = 103,
+        [EnumMember(Value = "104")]
+        IntervalValueReached = 104,
+        [EnumMember(Value = "105")]
+        IntervalValueTooLow = 105,
+
+        [EnumMember(Value = "201")]
+        OwnBankaccount = 201,
+        [EnumMember(Value = "202")]
+        InvalidSalesLocation = 202,
+        [EnumMember(Value = "203")]
+        ExceededMaximumOrderAmount = 203,
+        [EnumMember(Value = "204")]
+        BankaccountBlacklisted = 204,
+        [EnumMember(Value = "205")]
+        BankaccountDailyQuantityReached = 205,
+        [EnumMember(Value = "206")]
+        MaximumDailyDebitAmountReached = 206,
+        [EnumMember(Value = "207")]
+        LastDirectDebitDateTooEarly = 207,
+
+        [EnumMember(Value = "403")]
+        AccessDenied = 403,
+        [EnumMember(Value = "404")]
+        InvalidParameterValue = 404,
+        [EnumMember(Value = "405")]
+        InvalidInput = 405,
+
+        [EnumMember(Value = "500")]
+        InternalError = 500
+    }
+
+    public enum MandateInterval
+    {
+        [EnumMember(Value = "1")]
+        Week = 1,
+        [EnumMember(Value = "2")]
+        Month = 2,
+        [EnumMember(Value = "3")]
+        Quarter = 3,
+        [EnumMember(Value = "4")]
+        HalfAYear = 4,
+        [EnumMember(Value = "5")]
+        Year = 5,
+        [EnumMember(Value = "6")]
+        Day = 6,
     }
 }
