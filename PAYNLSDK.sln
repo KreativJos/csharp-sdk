@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAYNLSDK", "PAYNLSDK\PAYNLSDK.csproj", "{AFA4C5D6-CA5F-4365-9D9C-38173BED16F7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAYNLSDK", "PAYNLSDK\PAYNLSDK.csproj", "{AFA4C5D6-CA5F-4365-9D9C-38173BED16F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAYNLFormsApp", "PAYNLFormsApp\PAYNLFormsApp.csproj", "{509C5CD8-87CE-4A46-AA5D-50CFE8040C3D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PAYNLFormsApp", "PAYNLFormsApp\PAYNLFormsApp.csproj", "{509C5CD8-87CE-4A46-AA5D-50CFE8040C3D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B4803A37-EDD8-411F-8E58-46F089AE718B}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +20,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{AFA4C5D6-CA5F-4365-9D9C-38173BED16F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -44,5 +46,11 @@ Global
 		{509C5CD8-87CE-4A46-AA5D-50CFE8040C3D}.Release|x64.Build.0 = Release|Any CPU
 		{509C5CD8-87CE-4A46-AA5D-50CFE8040C3D}.Release|x86.ActiveCfg = Release|Any CPU
 		{509C5CD8-87CE-4A46-AA5D-50CFE8040C3D}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {87450348-448F-4148-B476-F29B696F790B}
 	EndGlobalSection
 EndGlobal

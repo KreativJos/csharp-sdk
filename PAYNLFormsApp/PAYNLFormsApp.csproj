@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5-windows</TargetFrameworks>
     <UseWindowsForms>true</UseWindowsForms>
-
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AssemblyName>PAYNLFormsApp</AssemblyName>
     <RootNamespace>PAYNLFormsApp</RootNamespace>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

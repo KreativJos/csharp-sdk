@@ -201,7 +201,7 @@ namespace PAYNLFormsApp
                 tbMain.Text = fixture.Response.ToString();
 
                 string url = fixture.Response.Transaction.PaymentURL;
-                System.Diagnostics.Process.Start(url);
+                OpenUrl(url);
             }
             catch (ErrorException ee)
             {
@@ -209,6 +209,51 @@ namespace PAYNLFormsApp
                 AddDebug(ee.Message);
             }
 
+        }
+
+        private static void OpenUrl(string url)
+        {
+            var process = new System.Diagnostics.Process();
+
+            process.StartInfo.UseShellExecute = true;
+
+            var browser = System.Environment.GetEnvironmentVariable("URL_BROWSER");
+
+            if (browser is not null)
+            {
+                process.StartInfo.FileName = browser;
+                process.StartInfo.ArgumentList.Add(url);
+            }
+            else
+            {
+                process.StartInfo.FileName = url;
+            }
+
+            try
+            {
+                process.Start();
+            }
+            catch
+            {
+                // hack because of this: https://github.com/dotnet/corefx/issues/10361
+                if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+                {
+                    url = url.Replace("&", "^&");
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+                }
+                else if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
+                {
+                    System.Diagnostics.Process.Start("xdg-open", url);
+                }
+                else if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.OSX))
+                {
+                    System.Diagnostics.Process.Start("open", url);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         private void startuseFixtureEditableToolStripMenuItem_Click(object sender, EventArgs e)
@@ -241,7 +286,7 @@ namespace PAYNLFormsApp
                 tbMain.Text = fixture.Response.ToString();
 
                 string url = fixture.Response.Transaction.PaymentURL;
-                System.Diagnostics.Process.Start(url);
+                OpenUrl(url);
             }
             catch (ErrorException ee)
             {
