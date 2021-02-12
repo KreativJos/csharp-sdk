@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Newtonsoft.Json;
 
 using PAYNLSDK.API;
 using PAYNLSDK.Exceptions;
 using PAYNLSDK.Net.ProxyConfigurationInjector;
-
-using Newtonsoft.Json;
 using PAYNLSDK.Utilities;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Net.Http;
+
 
 namespace PAYNLSDK.Net
 {
@@ -117,13 +118,12 @@ namespace PAYNLSDK.Net
         /// <returns>raw response string</returns>
         public string PerformRequest(RequestBase request)
         {
-            var httpRequest = PrepareRequest(request.Url, "POST");
-
             if (request.RequiresApiToken)
-            {
-                ParameterValidator.IsNotEmpty(Settings.ApiToken, "ApiToken");
-                httpRequest.Headers["authorization"] = GetAuthorizationHeader();
-            }
+                request.ApiToken = Settings.ApiToken;
+            if (request.RequiresServiceId)
+                request.ServiceId = Settings.ServiceID;
+
+            var httpRequest = PrepareRequest(request.Url, "POST");
 
             var rawResponse = PerformRoundTrip2(httpRequest, HttpStatusCode.OK, () =>
             {
@@ -145,6 +145,11 @@ namespace PAYNLSDK.Net
             if (Settings.ProxyConfigurationInjector != null)
                 throw new NotImplementedException($"PerformRequestAsync not implemented yet with {nameof(Settings.ProxyConfigurationInjector)}");
 
+            if (request.RequiresApiToken)
+                request.ApiToken = Settings.ApiToken;
+            if (request.RequiresServiceId)
+                request.ServiceId = Settings.ServiceID;
+
             var httpRequestContent = new FormUrlEncodedContent(request.GetParametersDictionary(Settings.ServiceID));
 
             httpRequestContent.Headers.ContentType.MediaType = WWWUrlContentType;
@@ -157,15 +162,6 @@ namespace PAYNLSDK.Net
             httpRequest.Headers.Accept.Clear();
             httpRequest.Headers.Accept.ParseAdd(ApplicationJsonContentType);
             httpRequest.Headers.UserAgent.Add(new ProductInfoHeaderValue("PAYNL_SDK_DOTNET_CORE", ClientVersion));
-
-            if (request.RequiresApiToken)
-            {
-                ParameterValidator.IsNotEmpty(Settings.ApiToken, "ApiToken");
-
-                var apiTokenBytes = Encoding.ASCII.GetBytes($"token: {Settings.ApiToken}");
-
-                httpRequest.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(apiTokenBytes));
-            }
 
             var response = await InternalHttpClient.SendAsync(httpRequest, cancellationToken)
                 .ConfigureAwait(false);

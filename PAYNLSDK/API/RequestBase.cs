@@ -23,6 +23,9 @@ namespace PAYNLSDK.API
         /// </summary>
         public virtual bool RequiresServiceId { get { return false; } }
 
+        public string ApiToken { get; set; }
+        public string ServiceId { get; set; }
+
         /// <summary>
         /// Return as JSON
         /// </summary>
@@ -68,8 +71,20 @@ namespace PAYNLSDK.API
 
             if (RequiresServiceId)
             {
+                if (string.IsNullOrWhiteSpace(serviceId))
+                    serviceId = ServiceId;
+
                 ParameterValidator.IsNotEmpty(serviceId, "ServiceId");
                 parameters.Add("serviceId", serviceId);
+            }
+
+            if (RequiresApiToken)
+            {
+                if (!String.IsNullOrEmpty(ApiToken))
+                {
+                    ParameterValidator.IsNotEmpty(ApiToken, "ApiToken");
+                    parameters.Add("token", ApiToken);
+                }
             }
 
             return parameters;
